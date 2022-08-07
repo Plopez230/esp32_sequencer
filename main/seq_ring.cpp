@@ -31,123 +31,69 @@
 # include <stdlib.h>
 # include <string.h>
 
-typedef struct    s_seq_ring
+int seq_ring_init(t_seq_ring *ring, uint32_t element_size,
+						uint32_t max_elements)
 {
-  uint8_t         *buffer;
-  uint32_t        head;
-  uint32_t        tail;
-  uint32_t        max_elements;
-  uint32_t        element_size;
-}                 t_seq_ring;
-
-/**
- * Returns the size of the buffer
- */
-uint32_t seq_ring_size(t_seq_ring *ring)
-{
-  if (ring->buffer)
-    return (ring->size);
-  return (0);
+	if (!ring)
+		return (-1);
+	ring->buffer = (uint8_t *)malloc(max_elements * element_size);
+	if (!ring->buffer)
+		return (-1);
+	ring->element_size = element_size;
+	ring->max_elements = max_elements;
+	ring->head = 0;
+	ring->tail = 0;
+	return (0);
 }
 
-/**
- * Returns the number of bytes available to read
- */
-uint32_t seq_ring_bytes_used(t_seq_ring *ring)
+uint32_t seq_ring_elements_used(t_seq_ring *ring)
 {
-  int dif;
-
-  dif = ring->head - ring->tail;
-  dif = (dif < 0) * (ring->size + dif - 1) + (dif >= 0) * (dif);
-  return (dif);
+	return ((ring->head - ring->tail < 0)
+			* (ring->max_elements + ring->head - ring->tail - 1)
+			+ (ring->head - ring->tail >= 0) * (ring->head - ring->tail));
 }
 
-/**
- * Returns the number of bytes available to write
- */
-uint32_t seq_ring_bytes_free(t_seq_ring *ring)
+uint32_t    seq_ring_bytes_used(t_seq_ring *ring)
 {
-  int dif;
-
-  dif = ring->size - seq_ring_bytes_used(ring) - 1;
-  return (dif);
+	return (seq_ring_elements_used(ring) * ring->element_size);
 }
 
-/**
- * Inserts one byte in the buffer.
- * If there is not space available the data is discarded.
- */
-int seq_ring_push(t_seq_ring *ring, uint8_t *data_src)
+uint32_t seq_ring_elements_free(t_seq_ring *ring)
 {
-  int next;
-
-  next = ring->head + 1;
-  if (next == ring->size)
-    next = 0;
-  if (!seq_ring_bytes_free(ring))
-    return (-1);
-  ring->buffer[ring->head] = *data_src;
-  ring->head = next;
-  return (0);
+	return (ring->max_elements - seq_ring_elements_used(ring) - 1);
 }
 
-int seq_ring_pushn(t_seq_ring *ring, void *data_src, uint32_t n)
+uint32_t	seq_ring_bytes_free(t_seq_ring *ring)
 {
-  uint8_t *data_pointer;
-
-  if (seq_ring_bytes_free(ring) < n)
-    return (-1);
-  data_pointer = (uint8_t *)data_src;
-  while (n--)
-    seq_ring_push(ring, data_pointer++);
-  return (0);
+	return (seq_ring_elements_free(ring) * ring->element_size);
 }
 
-/**
- * Reads one byte from the buffer
- * If there is not enough data to read returns -1
- * if the read is done correctly returns 0
- */
-int seq_ring_pop(t_seq_ring *ring, uint8_t *data_dst)
+int seq_ring_push(t_seq_ring *ring, void *src)
 {
-  int next;
+	uint32_t	next;
 
-  if (!seq_ring_bytes_used(ring))
-    return (-1);
-  next = ring->tail + 1;
-  if (next >= ring->size)
-    next = ring->size - next;
-  *data_dst = ring->buffer[ring->tail];
-  ring->tail = next;
-  return (0);
+	if (!seq_ring_elements_free(ring))
+		return (-1);
+	next = ring->head + 1;
+	if (next == ring->max_elements)
+		next = 0;
+	memcpy(ring->buffer + (ring->head * ring->element_size), src,
+			ring->element_size);
+	ring->head = next;
+	return (0);
 }
 
-int seq_ring_popn(t_seq_ring *ring, void *data_dst, uint32_t n)
+int seq_ring_pop(t_seq_ring *ring, void *dst)
 {
-  uint8_t *data_pointer;
+	uint32_t	next;
 
-  if (seq_ring_bytes_used(ring) < n)
-    return (-1);
-  data_pointer = (uint8_t *)data_dst;
-  while (n--)
-    seq_ring_pop(ring, data_pointer++);
-  return (0);
-}
-/**
- * Initialize the ring with the desired size
- */
-int seq_ring_init(t_seq_ring *ring, uint32_t size_in_bytes)
-{
-  if (ring)
-  {
-    ring->buffer = (uint8_t *)malloc(size_in_bytes + 1);
-    if (ring->buffer)
-    {
-      ring->size = size_in_bytes;
-      ring->head = 0;
-      ring->tail = 0;
-      return (0);
-    }
-  }
-  return (-1);
+	if (!seq_ring_elements_used(ring))
+		return (-1);
+	next = ring->tail + 1;
+	if (next > ring->max_elements)
+		next = 0;
+	memcpy (dst, ring->buffer + (ring->tail * ring->element_size),
+			ring->element_size);
+	ring->tail = next;
+	return (0);
 }
