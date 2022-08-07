@@ -26,3 +26,73 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
+
+#include <Arduino.h>
+#include <Wire.h>
+#include "Adafruit_MPR121.h"
+#include "seq_include.h"
+
+Adafruit_MPR121 seq_mpr121_a;
+Adafruit_MPR121 seq_mpr121_c;
+Adafruit_MPR121 seq_mpr121_d;
+
+void seq_keyboard_init()
+{
+  Wire.begin(I2C_SDA, I2C_SCL);
+  digitalWrite(I2C_SDA, 0);
+  digitalWrite(I2C_SCL, 0);
+  seq_mpr121_a.begin(0x5A);
+  seq_mpr121_c.begin(0x5C);
+  seq_mpr121_d.begin(0x5D);
+}
+
+{
+  currtouched = seq_mpr121_a.touched();
+  for (uint8_t i = 0; i < 12; i++) {
+    //it if *is* touched and *wasnt* touched before, alert!
+    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+      event.init_note_on_event(instrument, note + i, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+    // if it *was* touched and now *isnt*, alert!
+    if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      event.init_note_off_event(instrument, note + i, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+  }
+  // reset our state
+  lasttouched = currtouched;
+
+  currtouched = seq_mpr121_c.touched();
+  for (uint8_t i = 0; i < 12; i++) {
+    // it if *is* touched and *wasnt* touched before, alert!
+    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+      event.init_note_on_event(instrument, note - 12 + i, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+    // if it *was* touched and now *isnt*, alert!
+    if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      event.init_note_off_event(instrument, note - 12 + i, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+  }
+  // reset our state
+  lasttouched = currtouched;
+
+  currtouched = seq_mpr121_d.touched();
+  for (uint8_t i = 0; i < 12; i++) {
+    // it if *is* touched and *wasnt* touched before, alert!
+    if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
+      event.init_note_on_event(instrument, note + 12 + i, 0);
+      if (i==11) event.init_event(STOP, 0, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+    // if it *was* touched and now *isnt*, alert!
+    if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
+      event.init_note_off_event(instrument, note + 12 + i, 0);
+      if (output_queue) output_queue->push(&event);
+    }
+  }
+  // reset our state
+  lasttouched = currtouched;
+}

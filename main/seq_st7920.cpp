@@ -29,11 +29,11 @@
 
 #include <Arduino.h>
 #include <U8g2lib.h>
-#include <SPI.h>
+//#include <SPI.h>
 #include "seq_peripheral.h"
 
 /**
- * Define and create screen handler
+ * Define and create screen handler as global variable
  */
 SEQ_U8G2_CLASS u8g2(
   U8G2_R0, 
@@ -66,9 +66,9 @@ void seq_st7920_init(void)
  * Refresh screen and draw
  * draw_callback calls the printing functions.
  */
-void seq_st7920_draw(void (*draw_callback)(SEQ_U8G2_CLASS))
-{
-  u8g2.clearBuffer();
-  draw_callback(u8g2);
-  u8g2.sendBuffer();
-}
+//void seq_st7920_draw(void (*draw_callback)(SEQ_U8G2_CLASS))
+//{
+//  u8g2.clearBuffer();
+//  draw_callback(u8g2);
+//  u8g2.sendBuffer();
+//}

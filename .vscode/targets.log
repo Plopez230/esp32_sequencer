@@ -1,0 +1,297 @@
+make.exe all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.82.90
+# Built for i686-pc-mingw32
+# Copyright (C) 1988-2012 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+ 
+
+# Make data base, printed on Sun Aug 07 01:59:20 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(patsubst %\,%,$(dir $<)))
+# automatic
+?F = $(notdir $?)
+# default
+.SHELLFLAGS := -c
+# makefile
+MAKEFLAGS = Rrqp
+# automatic
+?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
+# automatic
+@D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
+# environment
+HOMEDRIVE = C:
+# automatic
+@F = $(notdir $@)
+# automatic
+^D = $(patsubst %/,%,$(patsubst %\,%,$(dir $^)))
+# makefile
+CURDIR := c:/Users/Pablo/Documents/GitHub/esp32_sequencer
+# default
+SHELL := sh.exe
+# environment
+WINDIR = C:\Windows
+# environment
+VSCODE_NLS_CONFIG = {"locale":"es","availableLanguages":{"*":"es"},"_languagePackId":"aa57718bb4fee18a0bf2e4902cb2afaf.es","_translationsConfigFile":"C:\\Users\\Pablo\\AppData\\Roaming\\Code\\clp\\aa57718bb4fee18a0bf2e4902cb2afaf.es\\tcf.json","_cacheRoot":"C:\\Users\\Pablo\\AppData\\Roaming\\Code\\clp\\aa57718bb4fee18a0bf2e4902cb2afaf.es","_resolvedLanguagePackCoreLocation":"C:\\Users\\Pablo\\AppData\\Roaming\\Code\\clp\\aa57718bb4fee18a0bf2e4902cb2afaf.es\\3b889b090b5ad5793f524b5d1d39fda662b96a2a","_corruptedFile":"C:\\Users\\Pablo\\AppData\\Roaming\\Code\\clp\\aa57718bb4fee18a0bf2e4902cb2afaf.es\\corrupted.info","_languagePackSupport":true}
+# environment
+VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
+# environment
+ONEDRIVE = C:\Users\Pablo\OneDrive
+# environment
+PATHEXT = .COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+# makefile
+MAKEFILE_LIST := 
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
+# environment
+TMP = C:\Users\Pablo\AppData\Local\Temp
+# environment
+PROGRAMW6432 = C:\Program Files
+# environment
+PROGRAMDATA = C:\ProgramData
+# environment
+VSCODE_CWD = C:\Users\Pablo\AppData\Local\Programs\Microsoft VS Code
+# environment
+PATH = C:\ProgramData\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files (x86)\PDFtk\bin\;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\poppler-0.68.0_x86\bin;C:\Program Files\Graphviz\bin;C:\Program Files\Git\cmd;C:\Users\Pablo\AppData\Local\Microsoft\WindowsApps;C:\Users\Pablo\AppData\Local\Programs\Python\Python38\Scripts;C:\Users\Pablo\AppData\Roaming\npm;C:\Program Files (x86)\Nmap;C:\Users\Pablo\AppData\Local\GitHubDesktop\bin;C:\Program Files\poppler-0.68.0_x86\bin;C:\MinGW\bin;;C:\Users\Pablo\AppData\Local\Programs\Microsoft VS Code\bin
+# environment
+COMMONPROGRAMW6432 = C:\Program Files\Common Files
+# environment
+PROCESSOR_ARCHITECTURE = x86
+# environment
+USERPROFILE = C:\Users\Pablo
+# environment
+ALLUSERSPROFILE = C:\ProgramData
+# environment
+NUMBER_OF_PROCESSORS = 4
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver
+# automatic
+%F = $(notdir $%)
+# environment
+CHROME_CRASHPAD 
+_PIPE_NAME = \\.\pipe\crashpad_13940_BSKDIZSHZUGONQCL
+# environment
+COMPUTERNAME = DESKTOP-U3C9E5P
+# environment
+PROGRAMFILES = C:\Program Files (x86)
+# environment
+DRIVERDATA = C:\Windows\System32\Drivers\DriverData
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+USERNAME = Pablo
+# environment
+PUBLIC = C:\Users\Public
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+VSCODE_CODE_CACHE_PATH = C:\Users\Pablo\AppData\Roaming\Code\CachedData\3b889b090b5ad5793f524b5d1d39fda662b96a2a
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+COMMONPROGRAMFILES = C:\Program Files (x86)\Common Files
+# environment
+LOGONSERVER = \\DESKTOP-U3C9E5P
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# environment
+USERDOMAIN = DESKTOP-U3C9E5P
+# environment
+MIC_LD_LIBRARY_PATH = C:\Program Files (x86)\Common Files\Intel\Shared Libraries\compiler\lib\mic
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# default
+MAKE_VERSION := 3.82.90
+# makefile
+.DEFAULT_GOAL := 
+# environment
+PROGRAMFILES(X86) = C:\Program Files (x86)
+# automatic
+%D = $(patsubst %/,%,$(patsubst %\,%,$(dir $%)))
+# environment
+LOCALAPPDATA = C:\Users\Pablo\AppData\Local
+# environment
+PSMODULEPATH = C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+# default
+MAKE_COMMAND := make.exe
+# environment
+PROCESSOR_ARCHITEW6432 = AMD64
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+PROCESSOR_IDENTIFIER = AMD64 Family 21 Model 96 Stepping 1, AuthenticAMD
+# environment
+OS = Windows_NT
+# environment
+VSCODE_IPC_HOOK = \\.\pipe\7f6fe5e5a181b0c0ceab6494ef72b044-1.69.2-main-sock
+# environment
+HOMEPATH = \Users\Pablo
+# environment
+COMMONPROGRAMFILES(X86) = C:\Program Files (x86)\Common Files
+# environment
+PROMPT = $P$G
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(patsubst %\,%,$(dir $*)))
+# environment
+INTEL_DEV_REDIST = C:\Program Files (x86)\Common Files\Intel\Shared Libraries\
+# environment
+SYSTEMROOT = C:\Windows
+# automatic
++D = $(patsubst %/,%,$(patsubst %\,%,$(dir $+)))
+# automatic
++F = $(notdir $+)
+# environment
+APPDATA = C:\Users\Pablo\AppData\Roaming
+# environment
+TEMP = C:\Users\Pablo\AppData\Local\Temp
+# environment
+COMSPEC = C:\Windows\system32\cmd.exe
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+LC_ALL = C
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# environment
+SYSTEMDRIVE = C:
+# environment
+SESSIONNAME = Console
+# environment
+PROCESSOR_REVISION = 6001
+# default
+.INCLUDE_DIRS = C:/MinGW/include
+# environment
+VBOX_HWVIRTEX_IGNORE_SVM_IN_USE = 1
+# default
+.RECIPEPREFIX := 
+# environment
+LANG = C
+# environment
+PROCESSOR_LEVEL = 21
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
+# environment
+VSCODE_PID = 13940
+# environment
+USERDOMAIN_ROAMINGPROFILE = DESKTOP-U3C9E5P
+# variable set hash-table stats:
+# Load=90/1024=9%, Rehash=0, Collisions=11/106=10%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# : could not be stat'd.
+# C:\ProgramData\DockerDesktop\version-bin: could not be stat'd.
+# C:\ProgramData\Oracle\Java\javapath (key C:/ProgramData/Oracle/Java/javapath, mtime 1657450576): 5 files, no impossibilities.
+# C:\Users\Pablo\AppData\Local\Programs\Python\Python38\Scripts (key C:/Users/Pablo/AppData/Local/Programs/Python/Python38/Scripts, mtime 1649634502): 50 files, no impossibilities.
+# C:\Windows\System32\WindowsPowerShell\v1.0\ (key C:/Windows/System32/WindowsPowerShell/v1.0/, mtime 1553000379): 30 files, no impossibilities.
+# . (key c:/Users/Pablo/Documents/GitHub/esp32_sequencer, mtime 1659828192): 6 files, no impossibilities.
+# C:\Users\Pablo\AppData\Roaming\npm (key C:/Users/Pablo/AppData/Roaming/npm, mtime 1612893562): 2 files, no impossibilities.
+# C:\Program Files\Docker\Docker\resources\bin (key C:/Program Files/Docker/Docker/resources/bin, mtime 1640725833): 13 files, no impossibilities.
+# C:\Program Files\Git\cmd (key C:/Program Files/Git/cmd, mtime 1659299119): 8 files, no impossibilities.
+# C:\Windows\System32\OpenSSH\: could not be stat'd.
+# C:\MinGW\bin (key C:/MinGW/bin, mtime 1649974846): 56 files, no impossibilities.
+# C:\Users\Pablo\AppData\Local\Microsoft\WindowsApps (key C:/Users/Pablo/AppData/Local/Microsoft/WindowsApps, mtime 1659564022): 11 files, no impossibilities.
+# C:\Users\Pablo\AppData\Local\GitHubDesktop\bin (key C:/Users/Pablo/AppData/Local/GitHubDesktop/bin, mtime 1640208970): 4 files, no impossibilities.
+# C:\Users\Pablo\AppData\Local\Programs\Microsoft VS Code\bin (key C:/Users/Pablo/AppData/Local/Programs/Microsoft VS Code/bin, mtime 1659296785): 4 files, no impossibilities.
+# C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler (key C:/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler, mtime 1596910707): 17 files, no impossibilities.
+# C:\Windows (key C:/Windows, mtime 1653086195): 114 files, no impossibilities.
+# C:\Program Files (x86)\PDFtk\bin\ (key C:/Program Files (x86)/PDFtk/bin/, mtime 1627215062): 6 files, no impossibilities.
+# C:\Windows\System32\Wbem (key C:/Windows/System32/Wbem, mtime 1596119067): 171 files, no impossibilities.
+# C:\Program Files\poppler-0.68.0_x86\bin: could not be stat'd.
+# C:\Program Files\nodejs\ (key C:/Program Files/nodejs/, mtime 1612893585): 11 files, no impossibilities.
+# C:\Program Files (x86)\Nmap (key C:/Program Files (x86)/Nmap, mtime 1638403639): 37 files, no impossibilities.
+# C:\Windows\system32 (key C:/Windows/system32, mtime 1659761891): 2997 files, no impossibilities.
+# C:\Program Files\Graphviz\bin (key C:/Program Files/Graphviz/bin, mtime 1641410043): 60 files, no impossibilities.
+
+# 3602 files, no impossibilities in 23 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File ha 
+make.exe: *** No rule to make target 'all'.  Stop.
+
+s not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 7 (6) / strings = 3571 / storage = 53460 B / avg = 14 B
+# current buf: size = 8174 B / used = 4462 B / count = 284 / avg = 15 B
+# other used: total = 45286 B / count = 3287 / avg = 13 B
+# other free: total = 46 B / max = 14 B / min = 2 B / avg = 7 B
+
+# strcache performance: lookups = 3633 / hit rate = 1%
+# hash-table stats:
+# Load=3571/8192=44%, Rehash=0, Collisions=1235/3633=34%
+# Finished Make data base on Sun Aug 07 01:59:20 2022
+
+ 

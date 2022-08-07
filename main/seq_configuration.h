@@ -27,25 +27,11 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#ifndef SEQ_CONFIGURATION_H
+# define SEQ_CONFIGURATION_H
 
-t_seq_ring ring;
+# define SEQ_CONFIG_MAX_TRACKS 12
+# define SEQ_CONFIG_MAX_BUFFER_ELEMENTS 500
+# define SEQ_CONFIG_MAX_MESSAGE_LENGTH 3
 
-void setup() {
-    seq_ring_init(&ring, 4);
-    Serial.begin(115200);
-    uint8_t c = 4;
-    seq_ring_push(&ring, &c);
-    c++;
-    seq_ring_push(&ring, &c);
-}
-
-void loop() {
-  uint8_t c = 65;
-
-  seq_ring_pop(&ring, &c);
-  Serial.println(c);
-  c++;
-  seq_ring_push(&ring, &c);
-  delay(100);
-}
+#endif

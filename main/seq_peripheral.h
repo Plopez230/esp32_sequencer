@@ -68,11 +68,4 @@
  */
 # define SEQ_U8G2_CLASS U8G2_ST7920_128X64_F_SW_SPI
 
-/**
- * seq_st7920.cpp prototypes
- */
-void seq_st7920_prepare(void);
-void seq_st7920_init(void);
-void seq_st7920_draw(void (*draw_callback)(SEQ_U8G2_CLASS));
-
 #endif

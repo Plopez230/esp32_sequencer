@@ -27,25 +27,39 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#ifndef SEQ_INCLUDE_H
+# define SEQ_INCLUDE_H
 
-t_seq_ring ring;
+# include <stdint.h>
+# include <stdlib.h>
+# include <string.h>
+# include "seq_configuration.h"
+# include "seq_structures.h"
+# include "seq_peripheral.h"
 
-void setup() {
-    seq_ring_init(&ring, 4);
-    Serial.begin(115200);
-    uint8_t c = 4;
-    seq_ring_push(&ring, &c);
-    c++;
-    seq_ring_push(&ring, &c);
-}
+/**
+ * seq_st7920.cpp prototypes
+ */
+void        seq_st7920_prepare(void);
+void        seq_st7920_init(void);
+//void        seq_st7920_draw(void (*draw_callback)(SEQ_U8G2_CLASS));
 
-void loop() {
-  uint8_t c = 65;
+/**
+ * seq_mpr121.cpp prototypes
+ */
+void        seq_mpr121_init(void);
+void        seq_mpr121_get_events(void);
 
-  seq_ring_pop(&ring, &c);
-  Serial.println(c);
-  c++;
-  seq_ring_push(&ring, &c);
-  delay(100);
-}
+/**
+ * seq_ring.cpp prototypes
+ */
+uint32_t seq_ring_size(t_seq_ring *ring);
+uint32_t seq_ring_bytes_used(t_seq_ring *ring);
+uint32_t seq_ring_bytes_free(t_seq_ring *ring);
+int seq_ring_push(t_seq_ring *ring, uint8_t *data_src);
+int seq_ring_pushn(t_seq_ring *ring, void *data_src, uint32_t n);
+int seq_ring_pop(t_seq_ring *ring, uint8_t *data_dst);
+int seq_ring_popn(t_seq_ring *ring, void *data_dst, uint32_t n);
+int seq_ring_init(t_seq_ring *ring, uint32_t size_in_bytes);
+
+#endif

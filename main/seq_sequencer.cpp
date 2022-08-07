@@ -29,23 +29,22 @@
 
 #include "seq_include.h"
 
-t_seq_ring ring;
+typedef struct    s_seq_track
+{
+  s_seq_ring      *ring;
+  uint16_t        elapsed_ticks;
+  uint16_t        idle_ticks;
+  uint8_t         enable;
+  s_seq_event     *loaded;
+}                 t_seq_track;
 
-void setup() {
-    seq_ring_init(&ring, 4);
-    Serial.begin(115200);
-    uint8_t c = 4;
-    seq_ring_push(&ring, &c);
-    c++;
-    seq_ring_push(&ring, &c);
+void seq_track_load_event(t_seq_track *track)
+{
+  if (!seq_ring_pop(track->ring, track->loaded))
+    seq->enable = 0;
 }
 
-void loop() {
-  uint8_t c = 65;
-
-  seq_ring_pop(&ring, &c);
-  Serial.println(c);
-  c++;
-  seq_ring_push(&ring, &c);
-  delay(100);
+void seq_track_update(t_seq_track *track, uint16_t delta_ticks)
+{
+  
 }

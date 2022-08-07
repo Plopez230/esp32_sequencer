@@ -27,25 +27,57 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#ifndef SEQ_STRUCTURES_H
+# define SEQ_STRUCTURES_H
 
-t_seq_ring ring;
+/**
+ * Ring buffer structure
+ */
+typedef struct    s_seq_ring
+{
+  uint8_t         *buffer;
+  uint32_t        head;
+  uint32_t        tail;
+  uint32_t        max_elements;
+  uint32_t        element_size;
+}                 t_seq_ring;
 
-void setup() {
-    seq_ring_init(&ring, 4);
-    Serial.begin(115200);
-    uint8_t c = 4;
-    seq_ring_push(&ring, &c);
-    c++;
-    seq_ring_push(&ring, &c);
-}
+/**
+ * Event structure
+ */
+typedef struct    s_seq_event
+{
+  uint16_t        wait_time;
+  uint8_t         message[SEQ_CONFIG_MAX_MESSAGE_LENGTH];
+}                 t_seq_event;
 
-void loop() {
-  uint8_t c = 65;
+/**
+ * Sequencer track structure
+ */
+typedef struct    s_seq_track
+{
+  s_seq_ring      *ring;
+  uint16_t        elapsed_ticks;
+  uint16_t        idle_ticks;
+  uint8_t         enable;
+  s_seq_event     *loaded;
+}                 t_seq_track;
 
-  seq_ring_pop(&ring, &c);
-  Serial.println(c);
-  c++;
-  seq_ring_push(&ring, &c);
-  delay(100);
-}
+/**
+ * Sequencer structure
+ */
+typedef struct    s_seq_sequencer
+{
+  t_seq_track     tracks[SEQ_CONFIG_MAX_TRACKS];
+  uint16_t        idle_ticks;
+  uint16_t        elapsed_ticks;
+  uint8_t         enable;
+}                 t_seq_sequencer;
+
+/**
+ * U8G2 Handler class
+ */
+# define SEQ_U8G2_CLASS U8G2_ST7920_128X64_F_SW_SPI
+
+
+#endif
