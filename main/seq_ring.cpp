@@ -27,9 +27,7 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-# include <stdint.h>
-# include <stdlib.h>
-# include <string.h>
+#include "seq_include.h"
 
 int seq_ring_init(t_seq_ring *ring, uint32_t element_size,
 						uint32_t max_elements)

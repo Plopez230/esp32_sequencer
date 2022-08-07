@@ -35,16 +35,33 @@ typedef struct    s_seq_track
   uint16_t        elapsed_ticks;
   uint16_t        idle_ticks;
   uint8_t         enable;
-  s_seq_event     *loaded;
+  s_seq_event     *next_event;
 }                 t_seq_track;
 
-void seq_track_load_event(t_seq_track *track)
+uint32_t  seq_track_update(t_seq_track *track, uint32_t delta)
 {
-  if (!seq_ring_pop(track->ring, track->loaded))
-    seq->enable = 0;
+  track->elapsed_ticks += delta;
+  while (track->enable && track->next_event->idle_ticks < track->elapsed_ticks)
+  {
+    //envio next_event
+    track->elapsed_ticks -= track->next_event->idle_ticks;
+    //cargo nuevo evento
+  }
+  return (track->next_event->idle_ticks - track->elapsed_ticks);
 }
 
-void seq_track_update(t_seq_track *track, uint16_t delta_ticks)
+uint32_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta)
 {
+  uint32_t min_idle_ticks;
+  uint8_t enable;
+  uint8_t track_counter;
+
+  enable = 0;
+  track_counter = 0;
+  while (track_counter < SEQ_CONFIG_MAX_TRACKS)
+  {
+
+    track_counter++;
+  }
   
 }

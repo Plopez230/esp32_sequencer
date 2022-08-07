@@ -47,7 +47,7 @@ typedef struct    s_seq_ring
  */
 typedef struct    s_seq_event
 {
-  uint16_t        wait_time;
+  uint16_t        idle_ticks;
   uint8_t         message[SEQ_CONFIG_MAX_MESSAGE_LENGTH];
 }                 t_seq_event;
 
@@ -60,7 +60,7 @@ typedef struct    s_seq_track
   uint16_t        elapsed_ticks;
   uint16_t        idle_ticks;
   uint8_t         enable;
-  s_seq_event     *loaded;
+  t_seq_event     *loaded;
 }                 t_seq_track;
 
 /**
@@ -73,11 +73,5 @@ typedef struct    s_seq_sequencer
   uint16_t        elapsed_ticks;
   uint8_t         enable;
 }                 t_seq_sequencer;
-
-/**
- * U8G2 Handler class
- */
-# define SEQ_U8G2_CLASS U8G2_ST7920_128X64_F_SW_SPI
-
 
 #endif
