@@ -3,23 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef struct    s_seq_ring
-{
-  uint8_t         *buffer;
-  uint32_t        head;
-  uint32_t        tail;
-  uint32_t        max_elements;
-  uint32_t        element_size;
-}                 t_seq_ring;
-
-int			seq_ring_init(t_seq_ring *ring, uint32_t element_size, 
-						uint32_t max_elements);
-uint32_t    seq_ring_elements_used(t_seq_ring *ring);
-uint32_t    seq_ring_bytes_used(t_seq_ring *ring);
-uint32_t	seq_ring_elements_free(t_seq_ring *ring);
-uint32_t	seq_ring_bytes_free(t_seq_ring *ring);
-int			seq_ring_push(t_seq_ring *ring, void *src);
-int			seq_ring_pop(t_seq_ring *ring, void *dst);
+#include "seq_include.h"
 
 int seq_ring_init(t_seq_ring *ring, uint32_t element_size,
 						uint32_t max_elements)
@@ -38,9 +22,19 @@ int seq_ring_init(t_seq_ring *ring, uint32_t element_size,
 
 uint32_t seq_ring_elements_used(t_seq_ring *ring)
 {
-	return ((ring->head - ring->tail < 0)
-			* (ring->max_elements + ring->head - ring->tail - 1)
-			+ (ring->head - ring->tail >= 0) * (ring->head - ring->tail));
+  if (ring->head > ring->tail)
+  {
+    // En este caso se han escrito algunos caracteres ,es la diferencia entre los dos
+    return (ring->head - ring->tail);
+  }
+  if (ring->head < ring->tail)
+  {
+    // posiciones invertidas
+    return (ring->tail - ring->head);
+  }
+  return (0);
+	return ((ring->head <= ring->tail)	* (ring->max_elements - ring->tail - ring->head - 1)
+			    + (ring->head > ring->tail) * (ring->head - ring->tail - 1));
 }
 
 uint32_t    seq_ring_bytes_used(t_seq_ring *ring)
@@ -65,7 +59,7 @@ int seq_ring_push(t_seq_ring *ring, void *src)
 	if (!seq_ring_elements_free(ring))
 		return (-1);
 	next = ring->head + 1;
-	if (next == ring->max_elements)
+	if (next >= ring->max_elements)
 		next = 0;
 	memcpy(ring->buffer + (ring->head * ring->element_size), src,
 			ring->element_size);
@@ -80,7 +74,7 @@ int seq_ring_pop(t_seq_ring *ring, void *dst)
 	if (!seq_ring_elements_used(ring))
 		return (-1);
 	next = ring->tail + 1;
-	if (next > ring->max_elements)
+	if (next >= ring->max_elements)
 		next = 0;
 	memcpy (dst, ring->buffer + (ring->tail * ring->element_size),
 			ring->element_size);

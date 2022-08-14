@@ -68,4 +68,8 @@
  */
 # define SEQ_U8G2_CLASS U8G2_ST7920_128X64_F_SW_SPI
 
+/**
+ * Keyboard handler class
+ */
+# define SEQ_MPR121_CLASS 
 #endif

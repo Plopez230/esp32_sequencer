@@ -30,6 +30,8 @@
 #ifndef SEQ_STRUCTURES_H
 # define SEQ_STRUCTURES_H
 
+# include "Adafruit_MPR121.h"
+
 /**
  * Ring buffer structure
  */
@@ -60,7 +62,7 @@ typedef struct    s_seq_track
   uint16_t        elapsed_ticks;
   uint16_t        idle_ticks;
   uint8_t         enable;
-  t_seq_event     *loaded;
+  t_seq_event     *next_event;
 }                 t_seq_track;
 
 /**
@@ -73,5 +75,42 @@ typedef struct    s_seq_sequencer
   uint16_t        elapsed_ticks;
   uint8_t         enable;
 }                 t_seq_sequencer;
+
+/**
+ * Keyboard structure
+ */
+typedef struct    s_seq_keyboard
+{
+  Adafruit_MPR121 device_a;
+  Adafruit_MPR121 device_c;
+  Adafruit_MPR121 device_d;
+  s_seq_ring      *output_buffer;
+  uint16_t        last_touched_a;
+  uint16_t        last_touched_c;
+  uint16_t        last_touched_d;
+  uint16_t        keyboard_mode;
+  uint8_t         velocity;
+  uint8_t         midi_channel;
+  void            (*press_callback)(s_seq_keyboard *, uint8_t);
+  void            (*release_callback)(s_seq_keyboard *, uint8_t);
+}                 t_seq_keyboard;
+
+/**
+ * Synth channel structure
+ */
+
+typedef struct        s_seq_synth_channel
+{
+  uint8_t             instrument;
+  uint8_t             note;
+  uint8_t             velocity;
+  uint8_t             used;
+}                     t_seq_synth_channel;
+
+typedef struct        s_seq_synth
+{
+  t_seq_synth_channel channels[9];
+  t_seq_ring          *input_buffer;
+}                     t_seq_synth;
 
 #endif

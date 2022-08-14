@@ -29,23 +29,20 @@
 
 #include "seq_include.h"
 
-t_seq_ring ring;
+t_seq_keyboard keyboard;
+t_seq_ring     keyboard_buffer;
+t_seq_synth    synth2;
 
 void setup() {
-    seq_ring_init(&ring, 4);
-    Serial.begin(115200);
-    uint8_t c = 4;
-    seq_ring_push(&ring, &c);
-    c++;
-    seq_ring_push(&ring, &c);
+  Serial.begin(9600);
+  seq_keyboard_init(&keyboard);
+  seq_ring_init(&keyboard_buffer, 3, 64);
+  keyboard.output_buffer = &keyboard_buffer;
+  synth2.input_buffer = &keyboard_buffer;
+  seq_synth_init(&synth2);
 }
 
 void loop() {
-  uint8_t c = 65;
-
-  seq_ring_pop(&ring, &c);
-  Serial.println(c);
-  c++;
-  seq_ring_push(&ring, &c);
-  delay(100);
+  seq_keyboard_touched(&keyboard);
+  seq_synth_loop(&synth2);
 }

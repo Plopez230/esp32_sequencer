@@ -29,15 +29,11 @@
 
 #include "seq_include.h"
 
-typedef struct    s_seq_track
-{
-  s_seq_ring      *ring;
-  uint16_t        elapsed_ticks;
-  uint16_t        idle_ticks;
-  uint8_t         enable;
-  s_seq_event     *next_event;
-}                 t_seq_track;
-
+/**
+ * Update sequencer track. 
+ * adds delta to elapsed ticks, checks if the next event is ready and sends it if true
+ * returns the idle time to the next event.
+ */
 uint32_t  seq_track_update(t_seq_track *track, uint32_t delta)
 {
   track->elapsed_ticks += delta;
@@ -50,6 +46,9 @@ uint32_t  seq_track_update(t_seq_track *track, uint32_t delta)
   return (track->next_event->idle_ticks - track->elapsed_ticks);
 }
 
+/**
+ * 
+ */
 uint32_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta)
 {
   uint32_t min_idle_ticks;
@@ -60,8 +59,8 @@ uint32_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta)
   track_counter = 0;
   while (track_counter < SEQ_CONFIG_MAX_TRACKS)
   {
-
+    
     track_counter++;
   }
-  
+  return (0);
 }

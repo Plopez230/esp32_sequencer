@@ -53,13 +53,65 @@ void        seq_mpr121_get_events(void);
 /**
  * seq_ring.cpp prototypes
  */
-uint32_t seq_ring_size(t_seq_ring *ring);
-uint32_t seq_ring_bytes_used(t_seq_ring *ring);
-uint32_t seq_ring_bytes_free(t_seq_ring *ring);
-int seq_ring_push(t_seq_ring *ring, uint8_t *data_src);
-int seq_ring_pushn(t_seq_ring *ring, void *data_src, uint32_t n);
-int seq_ring_pop(t_seq_ring *ring, uint8_t *data_dst);
-int seq_ring_popn(t_seq_ring *ring, void *data_dst, uint32_t n);
-int seq_ring_init(t_seq_ring *ring, uint32_t size_in_bytes);
+int         seq_ring_init(t_seq_ring *ring, uint32_t element_size, 
+            uint32_t max_elements);
+uint32_t    seq_ring_elements_used(t_seq_ring *ring);
+uint32_t    seq_ring_bytes_used(t_seq_ring *ring);
+uint32_t    seq_ring_elements_free(t_seq_ring *ring);
+uint32_t    seq_ring_bytes_free(t_seq_ring *ring);
+int         seq_ring_push(t_seq_ring *ring, void *src);
+int         seq_ring_pop(t_seq_ring *ring, void *dst);
+
+/**
+ * seq_mpr121.cpp prototypes
+ */
+void        seq_keyboard_init(t_seq_keyboard *keyboard);
+void        seq_keyboard_device_touched(Adafruit_MPR121 *seq_mpr121, uint16_t *last_touched, uint8_t key_offset);
+void        seq_keyboard_instrument_press(uint8_t key);
+void        seq_keyboard_instrument_release(uint8_t key);
+void        seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard);
+void        seq_keyboard_touched(t_seq_keyboard *keyboard);
+void        seq_keyboard_text_press(uint8_t key);
+void        seq_keyboard_text_release(uint8_t key);
+void        seq_keyboard_set_text_mode(t_seq_keyboard *keyboard);
+
+
+
+void seq_ym2413_shift (uint8_t value);
+void seq_synth_reset_channels(t_seq_synth *synth);
+int8_t  seq_synth_get_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+int8_t  seq_synth_release_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+void seq_ym2413_setup_pins();
+void seq_ym2413_select_chip();
+void seq_ym2413_reset_chip();
+void seq_ym2413_setup();
+void seq_ym2413_write(byte address, byte data);
+void seq_ym2413_play_note(int channel, int pitch, int oct, int instrument, int vol);
+void seq_ym2413_stop_note(int channel, boolean sustain);
+int note_(int note);
+int octave_ (int note);
+void seq_synth_play_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+void seq_synth_stop_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+void seq_synth_init(t_seq_synth *synth);
+void seq_synth_loop(t_seq_synth *synth);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif
