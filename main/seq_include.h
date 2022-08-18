@@ -65,15 +65,20 @@ int         seq_ring_pop(t_seq_ring *ring, void *dst);
 /**
  * seq_mpr121.cpp prototypes
  */
-void        seq_keyboard_init(t_seq_keyboard *keyboard);
-void        seq_keyboard_device_touched(Adafruit_MPR121 *seq_mpr121, uint16_t *last_touched, uint8_t key_offset);
-void        seq_keyboard_instrument_press(uint8_t key);
-void        seq_keyboard_instrument_release(uint8_t key);
-void        seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard);
-void        seq_keyboard_touched(t_seq_keyboard *keyboard);
-void        seq_keyboard_text_press(uint8_t key);
-void        seq_keyboard_text_release(uint8_t key);
-void        seq_keyboard_set_text_mode(t_seq_keyboard *keyboard);
+void seq_keyboard_init(t_seq_keyboard *keyboard);
+void seq_keyboard_device_touched(t_seq_keyboard *keyboard, Adafruit_MPR121 *seq_mpr121, uint16_t *last_touched, uint8_t key_offset);
+void seq_keyboard_instrument_press(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_instrument_release(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard);
+void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_control_release(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_set_control_mode(t_seq_keyboard *keyboard);
+void seq_keyboard_update_mode(t_seq_keyboard *keyboard);
+void seq_keyboard_text_press(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_text_release(t_seq_keyboard *keyboard, uint8_t key);
+void seq_keyboard_set_text_mode(t_seq_keyboard *keyboard);
+void seq_keyboard_loop(t_seq_keyboard *keyboard);
+void seq_keyboard_check_mode_button(t_seq_keyboard *keyboard);
 
 
 
@@ -86,7 +91,7 @@ void seq_ym2413_select_chip();
 void seq_ym2413_reset_chip();
 void seq_ym2413_setup();
 void seq_ym2413_write(byte address, byte data);
-void seq_ym2413_play_note(int channel, int pitch, int oct, int instrument, int vol);
+void seq_ym2413_play_note(s_seq_synth_tuning *tuning, int channel, int note, int instrument, int vol);
 void seq_ym2413_stop_note(int channel, boolean sustain);
 int note_(int note);
 int octave_ (int note);
@@ -97,18 +102,24 @@ void seq_synth_loop(t_seq_synth *synth);
 
 
 
+void seq_tuning_12(t_seq_synth_tuning *tuning);
+void seq_tuning_13(t_seq_synth_tuning *tuning);
+void seq_tuning_14(t_seq_synth_tuning *tuning);
+void seq_tuning_15(t_seq_synth_tuning *tuning);
+void seq_tuning_16(t_seq_synth_tuning *tuning);
+void seq_tuning_17(t_seq_synth_tuning *tuning);
 
 
 
+uint64_t  seq_track_update(t_seq_track *track, uint32_t delta);
+uint64_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta);
+void  seq_sequencer_loop(t_seq_sequencer *sequencer);
+void seq_sequencer_setup_timer(t_seq_sequencer *sequencer, uint16_t bpm, uint16_t precision);
 
 
-
-
-
-
-
-
-
+int8_t seq_sd_init();
+void SD_Init(void *parameter);
+void seq_sd_init_task(t_seq_sequencer *sequencer);
 
 
 

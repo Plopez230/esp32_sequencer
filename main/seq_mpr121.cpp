@@ -32,9 +32,15 @@
 
 #include "seq_include.h"
 
+
 void seq_keyboard_init(t_seq_keyboard *keyboard)
 {
   Wire.begin(SEQ_MPR121_SDA_PIN, SEQ_MPR121_SCL_PIN);
+  pinMode(SEQ_KEYBOARD_MODE_PIN, INPUT_PULLUP);
+  keyboard->last_debounce_time = 0;
+  keyboard->last_button_state = 0;
+  keyboard->operation_mode = 1;
+  seq_keyboard_update_mode(keyboard);
   digitalWrite(21, 0);
   digitalWrite(22, 0);
   keyboard->device_a = Adafruit_MPR121();
@@ -43,10 +49,15 @@ void seq_keyboard_init(t_seq_keyboard *keyboard)
   keyboard->device_a.begin(0x5A);
   keyboard->device_c.begin(0x5C);
   keyboard->device_d.begin(0x5D);
-  keyboard->midi_channel = 6;
+  keyboard->midi_channel = 4;
   keyboard->velocity = 0;
   seq_keyboard_set_instrument_mode(keyboard);
 }
+
+const char seq_keyboard_alpha_layout[] = "abcdefghijklmnopqrstuvwxyz";
+const char seq_keyboard_alpha_mayus_layout[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char seq_keyboard_num_layout[] = "0123456789-_().,;:{}[]<>?!";
+const char seq_keyboard_num_mayus_layout[] = "+-*/^=|.$&%";
 
 void seq_keyboard_device_touched(t_seq_keyboard *keyboard, Adafruit_MPR121 *seq_mpr121, uint16_t *last_touched, uint8_t key_offset)
 {
@@ -64,7 +75,7 @@ void seq_keyboard_device_touched(t_seq_keyboard *keyboard, Adafruit_MPR121 *seq_
 
 void seq_keyboard_instrument_press(t_seq_keyboard *keyboard, uint8_t key)
 {
-  char msg[3] = {(char)(144 + keyboard->midi_channel), key, (char)(keyboard->velocity)};
+  char msg[3] = {(char)(144 + keyboard->midi_channel), key, (uint8_t)(keyboard->velocity)};
   seq_ring_push(keyboard->output_buffer, msg);
 }
 
@@ -82,20 +93,82 @@ void seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard)
 
 void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
 {
-  Serial.print("Press   ");
-  Serial.println(key);
+  if (key == 26)
+  {
+    // izquierda
+  }
+  else if (key == 27)
+  {
+    // arriba
+  }
+  else if (key == 28)
+  {
+    // abajo
+  }
+  else if (key == 29)
+  {
+    // derecha
+  }
+  else if (key == 30)
+  {
+    // retroceso
+  }
+  else if (key == 31)
+  {
+    Serial.print(" ");
+  }
+  else if (key == 32)
+  {
+    Serial.print("\n");
+  }
+  else if (key == 33)
+  {
+    keyboard->mayus_mode = !keyboard->mayus_mode;
+  }
+  else if (key == 34)
+  {
+    keyboard->num_mode = !keyboard->num_mode;
+  }
+  else if (key == 35)
+  {
+    // atras
+  }else if (keyboard->num_mode)
+  {
+    if (keyboard->mayus_mode){
+      if (key < 11) Serial.print(seq_keyboard_num_mayus_layout[key]);
+    }else{
+      Serial.print(seq_keyboard_num_layout[key]);
+    }
+  }else{
+    if (keyboard->mayus_mode){
+      Serial.print(seq_keyboard_alpha_mayus_layout[key]);
+    }else{
+      Serial.print(seq_keyboard_alpha_layout[key]);
+    }
+  }
 }
 
 void seq_keyboard_control_release(t_seq_keyboard *keyboard, uint8_t key)
 {
-  Serial.print("Release ");
-  Serial.println(key);
+
 }
 
 void seq_keyboard_set_control_mode(t_seq_keyboard *keyboard)
 {
    keyboard->press_callback = seq_keyboard_control_press;
    keyboard->release_callback = seq_keyboard_control_release;
+}
+
+void seq_keyboard_update_mode(t_seq_keyboard *keyboard)
+{
+  if (keyboard->operation_mode == 0)
+  {
+    seq_keyboard_set_instrument_mode(keyboard);
+  }
+  else if (keyboard->operation_mode == 1)
+  {
+    seq_keyboard_set_control_mode(keyboard);
+  }
 }
 
 void seq_keyboard_text_press(t_seq_keyboard *keyboard, uint8_t key)
@@ -114,9 +187,28 @@ void seq_keyboard_set_text_mode(t_seq_keyboard *keyboard)
   keyboard->release_callback = seq_keyboard_text_release;
 }
 
-void seq_keyboard_touched(t_seq_keyboard *keyboard)
+void seq_keyboard_loop(t_seq_keyboard *keyboard)
 {
+  seq_keyboard_check_mode_button(keyboard);
   seq_keyboard_device_touched(keyboard, &keyboard->device_a, &(keyboard->last_touched_a), 12);
   seq_keyboard_device_touched(keyboard, &keyboard->device_c, &(keyboard->last_touched_c), 0);
   seq_keyboard_device_touched(keyboard, &keyboard->device_d, &(keyboard->last_touched_d), 24);
+  
+}
+
+void seq_keyboard_check_mode_button(t_seq_keyboard *keyboard) {
+  int reading = digitalRead(SEQ_KEYBOARD_MODE_PIN);
+  if (reading != keyboard->last_button_state) {
+    keyboard->last_debounce_time = millis();
+  }
+  if ((millis() - keyboard->last_debounce_time) > SEQ_CONFIG_DEBOUNCE_DELAY) {
+    if (reading != keyboard->button_state) {
+      keyboard->button_state = reading;
+      if (keyboard->button_state == HIGH) {
+        keyboard->operation_mode = !keyboard->operation_mode;
+        seq_keyboard_update_mode(keyboard);
+      }
+    }
+  }
+  keyboard->last_button_state = reading;
 }

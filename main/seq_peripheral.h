@@ -51,6 +51,7 @@
  */
 # define SEQ_MPR121_SDA_PIN    21
 # define SEQ_MPR121_SCL_PIN    22
+# define SEQ_KEYBOARD_MODE_PIN 16
 
 /**
  * YM2413 Synthesizer pins

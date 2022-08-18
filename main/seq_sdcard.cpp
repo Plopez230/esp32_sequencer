@@ -26,3 +26,83 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
+
+#include <Arduino.h>
+#include "SD.h"
+
+#include "seq_include.h"
+
+File myFile;
+SPIClass SPISD(HSPI);
+TaskHandle_t  seq_sd_task_handler;
+
+int8_t seq_sd_init()
+{
+  SPISD.begin(SEQ_SD_SCK_PIN, SEQ_SD_MISO_PIN, SEQ_SD_MOSI_PIN);
+  if (!SD.begin(SEQ_SD_CS_PIN,SPISD)) 
+  {
+    Serial.println(F("SD init failed!"));
+    return (-1);
+  }
+  else 
+  {
+    Serial.println(F("SD read!"));
+    return (0);
+  }
+}
+
+
+void SD_Init(void *parameter)
+{
+    uint32_t bytes_read = 0;
+    t_seq_sequencer *sequencer = (t_seq_sequencer *)parameter;
+    t_seq_track *track = &(sequencer->tracks[0]);
+    seq_sd_init();
+    s_seq_event event;
+    while(1){
+  myFile = SD.open("/track_2.hex", "r"); //read from file
+  if (myFile)
+  {
+    Serial.println("track_0.seq:");
+    while (myFile.available())
+    {
+      uint64_t elements_free = seq_ring_elements_free(&(track->ring));
+      //Serial.printf("Avaliable: %u, Free: %u\n",(uint32_t)myFile.available(),(uint32_t)elements_free);
+      if (!track->ring.BUFFER->isFull())
+      {
+        myFile.read((uint8_t*)&event, 7);
+        bytes_read += 7;
+        seq_ring_push(&(track->ring), &event);
+      }
+      if (bytes_read > 2000)
+      {
+        vTaskDelay(10);
+      }
+      else
+      {
+        vTaskDelay(10);
+      }
+    }
+    myFile.close();
+    Serial.println("se ha cerrado el fichero");
+  }
+  else
+  {
+    Serial.println("error opening track_10.seq to read");
+  }
+    Serial.printf("fin de l lectura %u bytes leidos", bytes_read);
+    }
+}
+
+
+void seq_sd_init_task(t_seq_sequencer *sequencer)
+{
+  xTaskCreatePinnedToCore(
+      SD_Init, /* Function to implement the task */
+      "sd task", /* Name of the task */
+      10000,  /* Stack size in words */
+      sequencer,  /* Task input parameter */
+      0,  /* Priority of the task */
+      &seq_sd_task_handler,  /* Task handle. */
+      0); /* Core where the task should run */
+}

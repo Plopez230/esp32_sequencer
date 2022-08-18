@@ -31,12 +31,14 @@
 # define SEQ_STRUCTURES_H
 
 # include "Adafruit_MPR121.h"
+# include <cppQueue.h>
 
 /**
  * Ring buffer structure
  */
 typedef struct    s_seq_ring
 {
+  cppQueue        *BUFFER;
   uint8_t         *buffer;
   uint32_t        head;
   uint32_t        tail;
@@ -49,7 +51,7 @@ typedef struct    s_seq_ring
  */
 typedef struct    s_seq_event
 {
-  uint16_t        idle_ticks;
+  uint32_t        idle_ticks;
   uint8_t         message[SEQ_CONFIG_MAX_MESSAGE_LENGTH];
 }                 t_seq_event;
 
@@ -58,11 +60,11 @@ typedef struct    s_seq_event
  */
 typedef struct    s_seq_track
 {
-  s_seq_ring      *ring;
+  t_seq_ring      ring;
   uint16_t        elapsed_ticks;
   uint16_t        idle_ticks;
   uint8_t         enable;
-  t_seq_event     *next_event;
+  t_seq_event     next_event;
 }                 t_seq_track;
 
 /**
@@ -74,6 +76,8 @@ typedef struct    s_seq_sequencer
   uint16_t        idle_ticks;
   uint16_t        elapsed_ticks;
   uint8_t         enable;
+  hw_timer_t      *timer;
+  t_seq_ring      *output_buffer;
 }                 t_seq_sequencer;
 
 /**
@@ -84,33 +88,49 @@ typedef struct    s_seq_keyboard
   Adafruit_MPR121 device_a;
   Adafruit_MPR121 device_c;
   Adafruit_MPR121 device_d;
-  s_seq_ring      *output_buffer;
+  t_seq_ring      *output_buffer;
   uint16_t        last_touched_a;
   uint16_t        last_touched_c;
   uint16_t        last_touched_d;
-  uint16_t        keyboard_mode;
+  uint8_t         operation_mode;
+  uint8_t         button_state;
+  uint8_t         last_button_state;
+  uint32_t        last_debounce_time;
   uint8_t         velocity;
+  uint8_t         num_mode;
+  uint8_t         mayus_mode;
   uint8_t         midi_channel;
   void            (*press_callback)(s_seq_keyboard *, uint8_t);
   void            (*release_callback)(s_seq_keyboard *, uint8_t);
 }                 t_seq_keyboard;
 
 /**
+ * Synth tuning structure
+ */
+typedef struct        s_seq_synth_tuning
+{
+  uint16_t            f_numbers[32];
+  uint8_t             divisions_per_octave; 
+}                     t_seq_synth_tuning;
+
+/**
  * Synth channel structure
  */
-
 typedef struct        s_seq_synth_channel
 {
   uint8_t             instrument;
   uint8_t             note;
   uint8_t             velocity;
   uint8_t             used;
+  uint64_t            last_active;
 }                     t_seq_synth_channel;
 
 typedef struct        s_seq_synth
 {
   t_seq_synth_channel channels[9];
   t_seq_ring          *input_buffer;
+  t_seq_synth_tuning  *tuning;
+  uint8_t             last_active_channel;
 }                     t_seq_synth;
 
 #endif

@@ -29,38 +29,85 @@
 
 #include "seq_include.h"
 
+
+portMUX_TYPE seq_sequencer_timer_mux = portMUX_INITIALIZER_UNLOCKED;
+uint64_t  seq_sequencer_time;
+
+
 /**
  * Update sequencer track. 
  * adds delta to elapsed ticks, checks if the next event is ready and sends it if true
  * returns the idle time to the next event.
  */
-uint32_t  seq_track_update(t_seq_track *track, uint32_t delta)
+uint64_t  seq_track_update(t_seq_sequencer *sequencer, t_seq_track *track, uint32_t delta)
 {
   track->elapsed_ticks += delta;
-  while (track->enable && track->next_event->idle_ticks < track->elapsed_ticks)
+  while (track->next_event.idle_ticks < track->elapsed_ticks)
   {
-    //envio next_event
-    track->elapsed_ticks -= track->next_event->idle_ticks;
-    //cargo nuevo evento
+    seq_ring_push(sequencer->output_buffer, track->next_event.message);
+    track->elapsed_ticks -= track->next_event.idle_ticks;
+    if (seq_ring_elements_used(&(track->ring))){
+      seq_ring_pop(&(track->ring), &(track->next_event));
+      track->next_event.idle_ticks /= SEQ_CONFIG_PRECISION_DIVIDER;
+  }    
   }
-  return (track->next_event->idle_ticks - track->elapsed_ticks);
+  return (track->next_event.idle_ticks - track->elapsed_ticks);
 }
 
-/**
- * 
- */
-uint32_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta)
-{
-  uint32_t min_idle_ticks;
-  uint8_t enable;
-  uint8_t track_counter;
+void IRAM_ATTR onTimer() {
+  portENTER_CRITICAL_ISR(&seq_sequencer_timer_mux);
+  seq_sequencer_time++;
+  portEXIT_CRITICAL_ISR(&seq_sequencer_timer_mux);
+}
 
-  enable = 0;
-  track_counter = 0;
-  while (track_counter < SEQ_CONFIG_MAX_TRACKS)
+void seq_sequencer_setup_timer(t_seq_sequencer *sequencer, uint16_t bpm, uint16_t precision)
+{
+  int timer_id = 0;
+  uint64_t prescaler = 80;
+  uint64_t counter = 80000000 / (precision * prescaler) * 60 / bpm;
+  
+  sequencer->timer = timerBegin(timer_id, prescaler, true);
+  timerAttachInterrupt(sequencer->timer, onTimer, true);
+  timerAlarmWrite(sequencer->timer, counter, true);
+  timerAlarmEnable(sequencer->timer);
+}
+
+uint64_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta)
+{
+  uint64_t    min_wait;
+  uint8_t     track_idx;
+  uint64_t    current_wait;
+  t_seq_track *current_track;
+
+  min_wait = UINT64_MAX;
+  track_idx = 0;
+  sequencer->elapsed_ticks += delta;
+  if (sequencer->elapsed_ticks >= sequencer->idle_ticks)
   {
-    
-    track_counter++;
+    while (track_idx < SEQ_CONFIG_MAX_TRACKS)
+    {
+      current_track = &(sequencer->tracks[track_idx]);
+      if (current_track->enable)
+      {
+        current_wait = seq_track_update(sequencer, &(sequencer->tracks[track_idx]), sequencer->elapsed_ticks);
+        if (current_wait < min_wait)
+          min_wait = current_wait;
+      }
+      track_idx++;
+    }
+    sequencer->elapsed_ticks = 0;
+    sequencer->idle_ticks = min_wait;
   }
-  return (0);
+  return (min_wait);
+}
+
+void  seq_sequencer_loop(t_seq_sequencer *sequencer)
+{
+  uint64_t  delta_ticks;
+  portENTER_CRITICAL_ISR(&seq_sequencer_timer_mux);
+  delta_ticks = seq_sequencer_time;
+  seq_sequencer_time = 0;
+  portEXIT_CRITICAL_ISR(&seq_sequencer_timer_mux);
+  seq_sequencer_update(sequencer, delta_ticks);
+  
 }
