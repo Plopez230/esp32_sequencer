@@ -29,6 +29,28 @@
 
 #include "seq_include.h"
 
+t_seq_synth *seq_synth_create()
+{
+  t_seq_synth *new_synth;
+
+  new_synth = (t_seq_synth *)malloc(sizeof(t_seq_synth));
+  if (!new_synth)
+    return (NULL);
+  new_synth->tuning = (s_seq_synth_tuning *)malloc(sizeof(s_seq_synth_tuning));
+  if (!new_synth->tuning)
+  {
+    free(new_synth);
+    return (NULL);
+  }
+  new_synth->input_buffer = new cppQueue(3, SEQ_CONFIG_SYNTH_BUFFER_SIZE, FIFO, true);
+  if (!new_synth->input_buffer)
+  {
+    free(new_synth);
+    return (NULL);
+  }
+  return (new_synth);
+}
+
 void seq_synth_reset_channels(t_seq_synth *synth)
 {
   uint8_t channel_counter;
@@ -123,6 +145,7 @@ void seq_synth_init(t_seq_synth *synth)
 {
   seq_ym2413_setup();
   seq_synth_reset_channels(synth);
+  seq_tuning_12(synth->tuning);
 }
 
 void seq_synth_loop(t_seq_synth *synth)
@@ -134,9 +157,9 @@ void seq_synth_loop(t_seq_synth *synth)
   
   if (!synth->input_buffer)
     return;
-  while (seq_ring_elements_used(synth->input_buffer))
+  while (!synth->input_buffer->isEmpty())
   {
-    seq_ring_pop(synth->input_buffer, event);
+    synth->input_buffer->pop(event);
     command = event[0] & 0xf0;
     channel = event[0] & 0x0f;
     velocity = (event[2] * 16) >> 4;

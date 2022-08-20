@@ -30,8 +30,7 @@
 #ifndef SEQ_STRUCTURES_H
 # define SEQ_STRUCTURES_H
 
-# include "Adafruit_MPR121.h"
-# include <cppQueue.h>
+
 
 /**
  * Ring buffer structure
@@ -61,6 +60,7 @@ typedef struct    s_seq_event
 typedef struct    s_seq_track
 {
   t_seq_ring      ring;
+  cppQueue        *track_buffer;
   uint16_t        elapsed_ticks;
   uint16_t        idle_ticks;
   uint8_t         enable;
@@ -72,7 +72,7 @@ typedef struct    s_seq_track
  */
 typedef struct    s_seq_sequencer
 {
-  t_seq_track     tracks[SEQ_CONFIG_MAX_TRACKS];
+  t_seq_track     *tracks[SEQ_CONFIG_MAX_TRACKS];
   uint16_t        idle_ticks;
   uint16_t        elapsed_ticks;
   uint8_t         enable;
@@ -88,7 +88,7 @@ typedef struct    s_seq_keyboard
   Adafruit_MPR121 device_a;
   Adafruit_MPR121 device_c;
   Adafruit_MPR121 device_d;
-  t_seq_ring      *output_buffer;
+  cppQueue        *output_buffer;
   uint16_t        last_touched_a;
   uint16_t        last_touched_c;
   uint16_t        last_touched_d;
@@ -128,9 +128,25 @@ typedef struct        s_seq_synth_channel
 typedef struct        s_seq_synth
 {
   t_seq_synth_channel channels[9];
-  t_seq_ring          *input_buffer;
+  cppQueue            *input_buffer;
   t_seq_synth_tuning  *tuning;
   uint8_t             last_active_channel;
 }                     t_seq_synth;
+
+typedef struct        s_seq_console
+{
+  cppQueue            *input_buffer;
+  TaskHandle_t        task_handler;
+  char                *command_buffer;
+  char                *return_buffer;
+}                     t_seq_console;
+
+typedef struct        s_seq_system
+{
+  t_seq_keyboard      *keyboard;
+  t_seq_synth         *synth;
+  t_seq_sequencer     *sequencer;
+  t_seq_console       *console;
+}                     t_seq_system;
 
 #endif

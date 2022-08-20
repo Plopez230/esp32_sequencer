@@ -28,10 +28,23 @@
 **************************************************************************************/
 
 #include <Arduino.h>
-#include <U8g2lib.h>
 //#include <SPI.h>
-#include "seq_peripheral.h"
+#include "seq_include.h"
 
+TaskHandle_t  seq_st7920_task_handler;
+void seq_st7920_loop(void *parameter);
+
+void seq_st7920_init_task()
+{
+  xTaskCreatePinnedToCore(
+      seq_st7920_loop, /* Function to implement the task */
+      "st7920 task", /* Name of the task */
+      10000,  /* Stack size in words */
+      NULL,  /* Task input parameter */
+      0,  /* Priority of the task */
+      &seq_st7920_task_handler,  /* Task handle. */
+      0); /* Core where the task should run */
+}
 /**
  * Define and create screen handler as global variable
  */
@@ -56,13 +69,7 @@ void seq_st7920_prepare(void) {
 }
 
 
-void seq_draw_status_bar(void)
-{
-  u8g2.setFont(u8g2_font_5x7_tf );
-  u8g2.drawFrame(0,54,128,10);
-  u8g2.drawStr(2, 55, "ins");
-  u8g2.drawFrame(0,54,18,10);
-}
+
 
 /**
  * Initialize screen
@@ -70,19 +77,30 @@ void seq_draw_status_bar(void)
 void seq_st7920_init(void)
 {
   u8g2.begin();
-  seq_st7920_prepare();
-  u8g2.clearBuffer();
-  seq_draw_status_bar();
-  u8g2.sendBuffer();
+  seq_st7920_init_task();
+}
+
+
+
+void seq_st7920_loop(void *parameter)
+{
+  uint64_t count = 0;
+  while (1)
+  {
+    //seq_st7920_draw(seq_draw_status_bar);
+    count ++;
+    //if (count % 1000 == 0) 
+    vTaskDelay(0);
+  }
 }
 
 /**
  * Refresh screen and draw
  * draw_callback calls the printing functions.
  */
-//void seq_st7920_draw(void (*draw_callback)(SEQ_U8G2_CLASS))
-//{
-//  u8g2.clearBuffer();
-//  draw_callback(u8g2);
-//  u8g2.sendBuffer();
-//}
+void seq_st7920_draw(void (*draw_callback)())
+{
+  u8g2.clearBuffer();
+  draw_callback();
+  u8g2.sendBuffer();
+}

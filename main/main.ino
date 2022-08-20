@@ -38,50 +38,61 @@ void disableWiFi(){
     WiFi.mode(WIFI_OFF);    // Switch WiFi off
 }
 
-t_seq_keyboard keyboard;
-t_seq_ring     keyboard_buffer;
-t_seq_synth    synth2;
-t_seq_synth_tuning tuning;
-t_seq_sequencer sequencer;
-
-void load_track(t_seq_sequencer *sequencer, uint8_t track_no, uint8_t note, uint8_t wait)
+void seq_system_create()
 {
-  t_seq_event event;
-  event.idle_ticks = wait;
-  event.message[1] = note;
-  event.message[2] = 0;
-  seq_ring_init(&(sequencer->tracks[track_no].ring), 7, 2500);
-
-  //event.message[0] = (char)(144 + 6);
-  //seq_ring_push(&(sequencer->tracks[track_no].ring), &event);
-  event.message[0] = (char)(128 + 6);
-  seq_ring_push(&(sequencer->tracks[track_no].ring), &event);
-
-  sequencer->tracks[track_no].enable = 1;
+  seq_system.sequencer = seq_sequencer_create();
+  seq_system.keyboard = seq_keyboard_create();
+  seq_system.synth = seq_synth_create();
+  seq_system.console = seq_console_create();
 }
 
+void seq_system_init()
+{
+  seq_st7920_init();
+  seq_keyboard_init(seq_system.keyboard);
+  seq_system.keyboard->output_buffer = seq_system.synth->input_buffer;
+  seq_synth_init(seq_system.synth);
+  seq_console_init(seq_system.console);
+}
 
-void setup() {
+void seq_system_loop()
+{
+  seq_keyboard_loop(seq_system.keyboard);
+  seq_synth_loop(seq_system.synth);
+  //seq_sequencer_loop(seq_system.sequencer);
+}
+
+t_seq_system seq_system;
+
+/*
+void setup2() {
   disableWiFi();
   Serial.begin(9600);
+  //seq_system.sequencer = &sequencer;
+  seq_system.sequencer = seq_sequencer_create();
+  seq_system.synth = seq_synth_create();
+  seq_system.keyboard = seq_keyboard_create();
   seq_st7920_init();
-  seq_keyboard_init(&keyboard);
+  seq_keyboard_init(seq_system.keyboard);
   seq_ring_init(&keyboard_buffer, 3, 1000);
-  keyboard.output_buffer = &keyboard_buffer;
+  seq_system.keyboard->output_buffer = &keyboard_buffer;
   synth2.input_buffer = &keyboard_buffer;
   seq_synth_init(&synth2);
-  keyboard.midi_channel = 9;
   synth2.tuning = &tuning;
   seq_tuning_12(&tuning);
-  load_track(&sequencer, 0, 40, 120);
-  load_track(&sequencer, 1, 40, 120);
-  seq_sd_init_task(&sequencer);
+  seq_sd_init_task(seq_system.sequencer);
   seq_sequencer_setup_timer(&sequencer, 180, SEQ_CONFIG_PRECISION_BASE);
-  sequencer.output_buffer = &keyboard_buffer;
+  seq_system.sequencer->output_buffer = &keyboard_buffer;
+}
+*/
+void setup()
+{
+  disableWiFi();
+  Serial.begin(9600);
+  seq_system_create();
+  seq_system_init();
 }
 
 void loop() {
-  seq_keyboard_loop(&keyboard);
-  seq_synth_loop(&synth2);
-  seq_sequencer_loop(&sequencer);
+  seq_system_loop();
 }

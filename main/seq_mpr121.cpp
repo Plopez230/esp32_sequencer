@@ -32,6 +32,15 @@
 
 #include "seq_include.h"
 
+t_seq_keyboard *seq_keyboard_create()
+{
+  t_seq_keyboard *new_keyboard;
+
+  new_keyboard = (t_seq_keyboard *)malloc(sizeof(t_seq_keyboard));
+  if (!new_keyboard)
+    return (NULL);
+  return (new_keyboard);
+}
 
 void seq_keyboard_init(t_seq_keyboard *keyboard)
 {
@@ -51,7 +60,6 @@ void seq_keyboard_init(t_seq_keyboard *keyboard)
   keyboard->device_d.begin(0x5D);
   keyboard->midi_channel = 4;
   keyboard->velocity = 0;
-  seq_keyboard_set_instrument_mode(keyboard);
 }
 
 const char seq_keyboard_alpha_layout[] = "abcdefghijklmnopqrstuvwxyz";
@@ -75,14 +83,24 @@ void seq_keyboard_device_touched(t_seq_keyboard *keyboard, Adafruit_MPR121 *seq_
 
 void seq_keyboard_instrument_press(t_seq_keyboard *keyboard, uint8_t key)
 {
+  Serial.println("Press1");
   char msg[3] = {(char)(144 + keyboard->midi_channel), key, (uint8_t)(keyboard->velocity)};
-  seq_ring_push(keyboard->output_buffer, msg);
+  Serial.println("Press2");
+  if (keyboard->output_buffer)
+  {
+    Serial.println("Press3");
+    keyboard->output_buffer->push(msg);
+  }
 }
 
 void seq_keyboard_instrument_release(t_seq_keyboard *keyboard, uint8_t key)
 {
   char msg[3] = {(char)(128 + keyboard->midi_channel), key, (char)(keyboard->velocity)};
-  seq_ring_push(keyboard->output_buffer, msg);
+  
+  if (keyboard->output_buffer)
+  {
+    keyboard->output_buffer->push(msg);
+  }
 }
 
 void seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard)
@@ -93,33 +111,41 @@ void seq_keyboard_set_instrument_mode(t_seq_keyboard *keyboard)
 
 void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
 {
+    char c;
   if (key == 26)
   {
-    // izquierda
+    c = 'I';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 27)
   {
-    // arriba
+    c = 'A';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 28)
   {
-    // abajo
+    c = 'B';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 29)
   {
-    // derecha
+    c = 'D';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 30)
   {
-    // retroceso
+    c = 28;
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 31)
   {
-    Serial.print(" ");
+    c = ' ';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 32)
   {
-    Serial.print("\n");
+    c = '\n';
+    seq_system.console->input_buffer->push(&c);
   }
   else if (key == 33)
   {
@@ -131,19 +157,24 @@ void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
   }
   else if (key == 35)
   {
-    // atras
+    c = 27;
+    if (key < 11) seq_system.console->input_buffer->push(&c);
   }else if (keyboard->num_mode)
   {
     if (keyboard->mayus_mode){
-      if (key < 11) Serial.print(seq_keyboard_num_mayus_layout[key]);
+      //seq_system.console->input_buffer->push(&seq_keyboard_num_mayus_layout[key]);
+      if (key < 11) seq_system.console->input_buffer->push(&seq_keyboard_num_mayus_layout[key]); //Serial.print(seq_keyboard_num_mayus_layout[key]);
     }else{
-      Serial.print(seq_keyboard_num_layout[key]);
+      seq_system.console->input_buffer->push(&seq_keyboard_num_layout[key]);
+      //Serial.print(seq_keyboard_num_layout[key]);
     }
   }else{
     if (keyboard->mayus_mode){
-      Serial.print(seq_keyboard_alpha_mayus_layout[key]);
+      seq_system.console->input_buffer->push(&seq_keyboard_alpha_mayus_layout[key]);
+      //Serial.print(seq_keyboard_alpha_mayus_layout[key]);
     }else{
-      Serial.print(seq_keyboard_alpha_layout[key]);
+      seq_system.console->input_buffer->push(&seq_keyboard_alpha_layout[key]);
+      //Serial.print(seq_keyboard_alpha_layout[key]);
     }
   }
 }
