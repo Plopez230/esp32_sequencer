@@ -97,6 +97,7 @@ typedef struct    s_seq_keyboard
   uint8_t         last_button_state;
   uint32_t        last_debounce_time;
   uint8_t         velocity;
+  uint8_t         traspose;
   uint8_t         num_mode;
   uint8_t         mayus_mode;
   uint8_t         midi_channel;

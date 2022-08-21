@@ -139,4 +139,6 @@ void seq_sd_init_task(t_seq_sequencer *sequencer);
 t_seq_console *seq_console_create();
 void seq_console_init(t_seq_console *console);
 
+void seq_register_commands();
+
 #endif

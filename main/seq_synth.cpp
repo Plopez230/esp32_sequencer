@@ -130,7 +130,7 @@ int octave_ (int note) {
 void seq_synth_play_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
 {
   uint8_t channel = seq_synth_get_channel(synth, instrument, note, velocity);
-  seq_ym2413_play_note(synth->tuning, channel, note, instrument, 0);
+  seq_ym2413_play_note(synth->tuning, channel, note, instrument, velocity>>4);
 }
 
 void seq_synth_stop_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)

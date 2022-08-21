@@ -168,6 +168,7 @@ void seq_console_init_task(t_seq_console *console)
 
 void seq_console_init(t_seq_console *console)
 {
+  seq_register_commands();
   console->command_buffer[0] = '\0';
   seq_console_init_task(console);
 }
