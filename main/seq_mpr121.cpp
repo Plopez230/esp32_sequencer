@@ -84,12 +84,9 @@ void seq_keyboard_device_touched(t_seq_keyboard *keyboard, Adafruit_MPR121 *seq_
 
 void seq_keyboard_instrument_press(t_seq_keyboard *keyboard, uint8_t key)
 {
-  Serial.println("Press1");
   char msg[3] = {(char)(144 + keyboard->midi_channel), (uint8_t)(key + keyboard->traspose), (uint8_t)(keyboard->velocity)};
-  Serial.println("Press2");
   if (keyboard->output_buffer)
   {
-    Serial.println("Press3");
     keyboard->output_buffer->push(msg);
   }
 }
@@ -178,6 +175,7 @@ void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
       //Serial.print(seq_keyboard_alpha_layout[key]);
     }
   }
+  xTaskNotifyGive(seq_system.console->task_handler);
 }
 
 void seq_keyboard_control_release(t_seq_keyboard *keyboard, uint8_t key)

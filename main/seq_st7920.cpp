@@ -60,12 +60,7 @@ SEQ_U8G2_CLASS u8g2(
  * Set default print style
  */
 void seq_st7920_prepare(void) {
-  u8g2.setFont(u8g2_font_5x7_tf );
-  u8g2.setFont(u8g2_font_6x10_tf);
-  u8g2.setFontRefHeightExtendedText();
-  u8g2.setDrawColor(1);
-  u8g2.setFontPosTop();
-  u8g2.setFontDirection(0);
+  u8g2.setFont(u8g2_font_4x6_tr );
 }
 
 
@@ -77,6 +72,7 @@ void seq_st7920_prepare(void) {
 void seq_st7920_init(void)
 {
   u8g2.begin();
+  seq_st7920_prepare();
   seq_st7920_init_task();
 }
 

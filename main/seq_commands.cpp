@@ -44,28 +44,25 @@ static const CLI_Command_Definition_t seq_kb_command_def =
     "kb",
     "kb <option> <value>",
     seq_kb_command,
-    2
+    -1
 };
 
-BaseType_t seq_kbc_command( char *pcWriteBuffer, size_t xWriteBufferLen, const char *command_string )
+BaseType_t seq_mem_command( char *pcWriteBuffer, size_t xWriteBufferLen, const char *command_string )
 {
-  u8g2.clearBuffer();
-  u8g2.drawStr(2,2,"Keyboard configuration");
-  u8g2.sendBuffer();
-  vTaskDelay(1000);
+  snprintf(pcWriteBuffer, xWriteBufferLen, "Free heap: %d bytes", ESP.getFreeHeap());
   return pdFALSE;
 }
 
-static const CLI_Command_Definition_t seq_kbc_command_def =
+static const CLI_Command_Definition_t seq_mem_command_def =
 {
-    "kbc",
-    "kbc",
-    seq_kbc_command,
+    "mem",
+    "mem",
+    seq_mem_command,
     0
 };
 
 void seq_register_commands()
 {
   FreeRTOS_CLIRegisterCommand(&seq_kb_command_def);
-  FreeRTOS_CLIRegisterCommand(&seq_kbc_command_def);
+  FreeRTOS_CLIRegisterCommand(&seq_mem_command_def);
 }

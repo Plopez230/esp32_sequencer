@@ -138,6 +138,8 @@ typedef struct        s_seq_console
 {
   cppQueue            *input_buffer;
   TaskHandle_t        task_handler;
+  char                print_buffer[SEQ_CONFIG_CONSOLE_PRINT_BUFFER_MAX_SIZE];
+  char                *print_buffer_end;
   char                *command_buffer;
   char                *return_buffer;
 }                     t_seq_console;
@@ -149,5 +151,27 @@ typedef struct        s_seq_system
   t_seq_sequencer     *sequencer;
   t_seq_console       *console;
 }                     t_seq_system;
+
+
+typedef struct        s_seq_loop_sequence
+{
+  char                sequence_file[SEQ_CONFIG_MAX_FILE_NAME_SIZE];
+  uint8_t             start_sequence_idx;
+  uint8_t             start_sequence_mode;
+  int64_t             start_sequence_displacement;
+  uint8_t             end_sequence_idx;
+  uint8_t             end_sequence_mode;
+  int64_t             end_sequence_displacement;
+  uint8_t             sequence_alignment;
+  uint8_t             sequence_repeat;
+}                     t_seq_loop_sequence;
+
+
+
+
+
+
+
+
 
 #endif
