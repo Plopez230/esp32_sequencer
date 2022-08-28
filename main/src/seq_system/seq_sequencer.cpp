@@ -27,7 +27,7 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************************************/
 
-#include "seq_include.h"
+#include "../seq.h"
 
 
 portMUX_TYPE seq_sequencer_timer_mux = portMUX_INITIALIZER_UNLOCKED;
@@ -84,7 +84,7 @@ uint64_t  seq_track_update(t_seq_sequencer *sequencer, t_seq_track *track, uint3
   while (track->next_event.idle_ticks < track->elapsed_ticks)
   {
     // TODO: replace ring with cppQueue
-    seq_ring_push(sequencer->output_buffer, track->next_event.message);
+    //seq_ring_push(sequencer->output_buffer, track->next_event.message);
     track->elapsed_ticks -= track->next_event.idle_ticks;
     if (!track->track_buffer->isEmpty()) {
       track->track_buffer->pop(&(track->next_event));

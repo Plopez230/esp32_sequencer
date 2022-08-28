@@ -30,7 +30,7 @@
 #include <Arduino.h>
 #include "SD.h"
 
-#include "seq_include.h"
+#include "../seq.h"
 
 File myFile;
 SPIClass SPISD(HSPI);

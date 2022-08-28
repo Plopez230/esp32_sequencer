@@ -27,7 +27,7 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#include "../seq.h"
 
 void seq_ym2413_shift (uint8_t value)
 {

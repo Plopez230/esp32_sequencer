@@ -27,7 +27,7 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#include "../seq.h"
 
 t_seq_synth *seq_synth_create()
 {

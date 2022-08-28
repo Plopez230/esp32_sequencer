@@ -27,23 +27,10 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#ifndef SEQ_STRUCTURES_H
-# define SEQ_STRUCTURES_H
+#ifndef SEQ_SYSTEM_H
+# define SEQ_SYSTEM_H
 
 
-
-/**
- * Ring buffer structure
- */
-typedef struct    s_seq_ring
-{
-  cppQueue        *BUFFER;
-  uint8_t         *buffer;
-  uint32_t        head;
-  uint32_t        tail;
-  uint32_t        max_elements;
-  uint32_t        element_size;
-}                 t_seq_ring;
 
 /**
  * Event structure
@@ -53,6 +40,9 @@ typedef struct    s_seq_event
   uint32_t        idle_ticks;
   uint8_t         message[SEQ_CONFIG_MAX_MESSAGE_LENGTH];
 }                 t_seq_event;
+
+typedef struct s_seq_ring {} t_seq_ring;
+typedef struct hw_timer_s {} hw_timer_t;
 
 /**
  * Sequencer track structure
@@ -79,31 +69,6 @@ typedef struct    s_seq_sequencer
   hw_timer_t      *timer;
   t_seq_ring      *output_buffer;
 }                 t_seq_sequencer;
-
-/**
- * Keyboard structure
- */
-typedef struct    s_seq_keyboard
-{
-  Adafruit_MPR121 device_a;
-  Adafruit_MPR121 device_c;
-  Adafruit_MPR121 device_d;
-  cppQueue        *output_buffer;
-  uint16_t        last_touched_a;
-  uint16_t        last_touched_c;
-  uint16_t        last_touched_d;
-  uint8_t         operation_mode;
-  uint8_t         button_state;
-  uint8_t         last_button_state;
-  uint32_t        last_debounce_time;
-  uint8_t         velocity;
-  uint8_t         traspose;
-  uint8_t         num_mode;
-  uint8_t         mayus_mode;
-  uint8_t         midi_channel;
-  void            (*press_callback)(s_seq_keyboard *, uint8_t);
-  void            (*release_callback)(s_seq_keyboard *, uint8_t);
-}                 t_seq_keyboard;
 
 /**
  * Synth tuning structure
@@ -139,19 +104,10 @@ typedef struct        s_seq_console
   cppQueue            *input_buffer;
   TaskHandle_t        task_handler;
   char                print_buffer[SEQ_CONFIG_CONSOLE_PRINT_BUFFER_MAX_SIZE];
-  char                *print_buffer_end;
   char                *command_buffer;
   char                *return_buffer;
+  uint32_t            print_line_cursor;
 }                     t_seq_console;
-
-typedef struct        s_seq_system
-{
-  t_seq_keyboard      *keyboard;
-  t_seq_synth         *synth;
-  t_seq_sequencer     *sequencer;
-  t_seq_console       *console;
-}                     t_seq_system;
-
 
 typedef struct        s_seq_loop_sequence
 {
@@ -166,12 +122,47 @@ typedef struct        s_seq_loop_sequence
   uint8_t             sequence_repeat;
 }                     t_seq_loop_sequence;
 
+uint32_t str_length_up_to_newline(char *str);
+char *previous_line_start(char *str, char *pos);
+char *get_full_line(char *str, char *pos, char **last_line_start, uint32_t *last_line_length);
+char *print_last_lines(char *test, char *temp, uint32_t n_lines, uint32_t offset);
+t_seq_console *seq_console_create();
+void seq_draw_command(t_seq_console *console);
+void seq_draw_status_bar();
+void seq_console_draw();
+void seq_console_task(void *parameter);
+void seq_console_init_task(t_seq_console *console);
+void seq_console_init(t_seq_console *console);
 
+void seq_track_delete(t_seq_track *track);
+t_seq_track *seq_track_create();
+t_seq_sequencer *seq_sequencer_create();
+uint64_t  seq_track_update(t_seq_sequencer *sequencer, t_seq_track *track, uint32_t delta);
+void IRAM_ATTR onTimer();
+void seq_sequencer_setup_timer(t_seq_sequencer *sequencer, uint16_t bpm, uint16_t precision);
+uint64_t seq_sequencer_update(t_seq_sequencer *sequencer, uint32_t delta);
+void  seq_sequencer_loop(t_seq_sequencer *sequencer);
 
+t_seq_synth *seq_synth_create();
+void seq_synth_reset_channels(t_seq_synth *synth);
+int8_t  seq_synth_get_channel2(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+int8_t  seq_synth_get_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+int8_t  seq_synth_release_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+int note_(int note);
+int octave_ (int note);
+void seq_synth_play_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+void seq_synth_stop_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity);
+void seq_synth_init(t_seq_synth *synth);
+void seq_synth_loop(t_seq_synth *synth);
 
+void seq_tuning_equal_tempered(t_seq_synth_tuning *tuning, uint16_t divisions, uint16_t base_frequency);
+void seq_tuning_12(t_seq_synth_tuning *tuning);
+void seq_tuning_13(t_seq_synth_tuning *tuning);
+void seq_tuning_14(t_seq_synth_tuning *tuning);
+void seq_tuning_15(t_seq_synth_tuning *tuning);
+void seq_tuning_16(t_seq_synth_tuning *tuning);
+void seq_tuning_17(t_seq_synth_tuning *tuning);
 
-
-
-
+void seq_register_commands();
 
 #endif

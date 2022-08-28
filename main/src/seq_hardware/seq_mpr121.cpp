@@ -30,7 +30,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "seq_include.h"
+#include "../seq.h"
 
 t_seq_keyboard *seq_keyboard_create()
 {
@@ -112,22 +112,22 @@ void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
   char c;
   if (key == 26)
   {
-    c = 'I';
+    c = 17;
     seq_system.console->input_buffer->push(&c);
   }
   else if (key == 27)
   {
-    c = 'A';
+    c = 18;
     seq_system.console->input_buffer->push(&c);
   }
   else if (key == 28)
   {
-    c = 'B';
+    c = 19;
     seq_system.console->input_buffer->push(&c);
   }
   else if (key == 29)
   {
-    c = 'D';
+    c = 20;
     seq_system.console->input_buffer->push(&c);
   }
   else if (key == 30)
@@ -156,7 +156,7 @@ void seq_keyboard_control_press(t_seq_keyboard *keyboard, uint8_t key)
   else if (key == 35)
   {
     c = 27;
-    if (key < 11) seq_system.console->input_buffer->push(&c);
+    seq_system.console->input_buffer->push(&c);
   } else if (keyboard->num_mode)
   {
     if (keyboard->mayus_mode) {
@@ -209,6 +209,28 @@ void seq_keyboard_text_press(t_seq_keyboard *keyboard, uint8_t key)
 void seq_keyboard_text_release(t_seq_keyboard *keyboard, uint8_t key)
 {
 
+}
+
+void seq_keyboard_application_press(t_seq_keyboard *keyboard, uint8_t key)
+{
+  if (key > 25)
+    seq_keyboard_control_press(keyboard, key);
+  else if (key <= 25)
+    seq_keyboard_instrument_press(keyboard, key);
+}
+
+void seq_keyboard_application_release(t_seq_keyboard *keyboard, uint8_t key)
+{
+  if (key > 25)
+    seq_keyboard_control_release(keyboard, key);
+  else if (key <= 25)
+    seq_keyboard_instrument_release(keyboard, key);
+}
+
+void seq_keyboard_set_application_mode(t_seq_keyboard *keyboard)
+{
+  keyboard->press_callback = seq_keyboard_application_press;
+  keyboard->release_callback = seq_keyboard_application_release;
 }
 
 void seq_keyboard_set_text_mode(t_seq_keyboard *keyboard)

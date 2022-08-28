@@ -30,10 +30,10 @@
 #include <BluetoothSerial.h>
 #include <esp_wifi.h>
 #include "driver/adc.h"
-#include "seq_include.h"
+#include "src/seq.h"
 
 void disableWiFi(){
-        adc_power_off();
+    adc_power_off();
     WiFi.disconnect(true);  // Disconnect from the network
     WiFi.mode(WIFI_OFF);    // Switch WiFi off
 }
@@ -52,6 +52,7 @@ void seq_system_init()
   seq_keyboard_init(seq_system.keyboard);
   seq_system.keyboard->output_buffer = seq_system.synth->input_buffer;
   seq_synth_init(seq_system.synth);
+  vTaskDelay(1);
   seq_console_init(seq_system.console);
 }
 
@@ -64,27 +65,7 @@ void seq_system_loop()
 
 t_seq_system seq_system;
 
-/*
-void setup2() {
-  disableWiFi();
-  Serial.begin(9600);
-  //seq_system.sequencer = &sequencer;
-  seq_system.sequencer = seq_sequencer_create();
-  seq_system.synth = seq_synth_create();
-  seq_system.keyboard = seq_keyboard_create();
-  seq_st7920_init();
-  seq_keyboard_init(seq_system.keyboard);
-  seq_ring_init(&keyboard_buffer, 3, 1000);
-  seq_system.keyboard->output_buffer = &keyboard_buffer;
-  synth2.input_buffer = &keyboard_buffer;
-  seq_synth_init(&synth2);
-  synth2.tuning = &tuning;
-  seq_tuning_12(&tuning);
-  seq_sd_init_task(seq_system.sequencer);
-  seq_sequencer_setup_timer(&sequencer, 180, SEQ_CONFIG_PRECISION_BASE);
-  seq_system.sequencer->output_buffer = &keyboard_buffer;
-}
-*/
+
 void setup()
 {
   disableWiFi();

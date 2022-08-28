@@ -27,7 +27,27 @@
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 **************************************************************************************/
 
-#include "seq_include.h"
+#include "../seq.h"
+
+
+void seq_tuning_equal_tempered(t_seq_synth_tuning *tuning, uint16_t divisions, uint16_t base_frequency)
+{
+  uint16_t tone_idx;
+  double interval;
+  double last_tone;
+
+  interval = pow(2, 1.0 / divisions);
+  tone_idx = 1;
+  tuning->f_numbers[0] = base_frequency;
+  last_tone = base_frequency;
+  while (tone_idx < divisions)
+  {
+    last_tone = last_tone * interval;
+    tuning->f_numbers[tone_idx] = (uint16_t)last_tone;
+    tone_idx++;
+  }
+  tuning->divisions_per_octave = divisions;
+}
 
 void seq_tuning_12(t_seq_synth_tuning *tuning)
 {
