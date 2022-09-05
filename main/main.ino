@@ -54,6 +54,7 @@ void seq_system_init()
   seq_synth_init(seq_system.synth);
   vTaskDelay(1);
   seq_console_init(seq_system.console);
+  seq_sd_init();
 }
 
 void seq_system_loop()
@@ -64,7 +65,6 @@ void seq_system_loop()
 }
 
 t_seq_system seq_system;
-
 
 void setup()
 {

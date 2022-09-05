@@ -127,8 +127,11 @@ void seq_ym2413_shift (uint8_t value);
 void seq_ym2413_setup_pins();
 void seq_ym2413_select_chip();
 void seq_ym2413_reset_chip();
+void seq_ym2413_update_preset(t_seq_fm_preset *preset);
 void seq_ym2413_setup();
 void seq_ym2413_write(byte address, byte data);
 void seq_ym2413_play_note(s_seq_synth_tuning *tuning, int channel, int note, int instrument, int vol);
-void seq_ym2413_stop_note(int channel, boolean sustain);
+void seq_ym2413_stop_note(s_seq_synth_tuning *tuning, int channel, int note, int instrument, int vol, boolean sustain);
+
+int8_t seq_sd_init();
 #endif

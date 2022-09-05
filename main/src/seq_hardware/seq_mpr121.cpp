@@ -59,7 +59,7 @@ void seq_keyboard_init(t_seq_keyboard *keyboard)
   keyboard->device_a.begin(0x5A);
   keyboard->device_c.begin(0x5C);
   keyboard->device_d.begin(0x5D);
-  keyboard->midi_channel = 4;
+  keyboard->midi_channel = 0;
   keyboard->velocity = 0;
 }
 

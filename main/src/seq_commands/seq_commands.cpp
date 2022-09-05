@@ -19,4 +19,6 @@ void seq_register_commands()
   FreeRTOS_CLIRegisterCommand(&seq_kb_command_def);
   FreeRTOS_CLIRegisterCommand(&seq_mem_command_def);
   FreeRTOS_CLIRegisterCommand(&seq_tone_command_def);
+  FreeRTOS_CLIRegisterCommand(&seq_fm_command_def);
+  FreeRTOS_CLIRegisterCommand(&seq_file_command_def);
 }

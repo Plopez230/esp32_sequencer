@@ -75,7 +75,7 @@ typedef struct    s_seq_sequencer
  */
 typedef struct        s_seq_synth_tuning
 {
-  uint16_t            f_numbers[32];
+  uint16_t            f_numbers[36];
   uint8_t             divisions_per_octave; 
 }                     t_seq_synth_tuning;
 
@@ -91,11 +91,60 @@ typedef struct        s_seq_synth_channel
   uint64_t            last_active;
 }                     t_seq_synth_channel;
 
+typedef struct        s_seq_midi_channel
+{
+  uint8_t             poly_mode;
+  uint8_t             sustain;
+  t_seq_synth_tuning  tuning;
+  uint8_t             instrument;
+  uint8_t             volume;
+  uint8_t             mute;
+}                     t_seq_midi_channel;
+
+typedef struct        s_seq_fm_preset
+{
+  int8_t             carrier_ksl;
+  int8_t             carrier_rel;
+  int8_t             carrier_mul;
+  int8_t             carrier_sus;
+  int8_t             carrier_att;
+  int8_t             carrier_dec;
+  int8_t             carrier_am;
+  int8_t             carrier_ksr;
+  int8_t             carrier_dc;
+  int8_t             carrier_vib;
+  int8_t             carrier_eg;
+  int8_t             dc;
+  int8_t             dm;
+  int8_t             modulator_ksl;
+  int8_t             modulator_rel;
+  int8_t             modulator_mul;
+  int8_t             modulator_sus;
+  int8_t             modulator_att;
+  int8_t             modulator_dec;
+  int8_t             modulator_am;
+  int8_t             modulator_ksr;
+  int8_t             modulator_dc;
+  int8_t             modulator_vib;
+  int8_t             modulator_eg;
+  int8_t             feedback;
+  int8_t             level;
+}                     t_seq_fm_preset;
+
+typedef struct        s_seq_midi_patch
+{
+    t_seq_midi_channel midi_channels[16];
+    t_seq_fm_preset    original_instrument;
+    uint8_t            original_instrument_register[8];
+}                     t_seq_midi_patch;
+
 typedef struct        s_seq_synth
 {
   t_seq_synth_channel channels[9];
+  t_seq_midi_patch    patch;
   cppQueue            *input_buffer;
   t_seq_synth_tuning  *tuning;
+  //MD_YM2413           *synth_chip;
   uint8_t             last_active_channel;
 }                     t_seq_synth;
 

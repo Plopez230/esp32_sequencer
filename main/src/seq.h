@@ -28,37 +28,37 @@
 **************************************************************************************/
 
 #ifndef SEQ_INCLUDE_H
-# define SEQ_INCLUDE_H
+#define SEQ_INCLUDE_H
 
-# include <stdint.h>
-# include <stdlib.h>
-# include <string.h>
-# include <math.h>
-# include <cppQueue.h>
-# include <FreeRTOS_CLI_vESP32.h>
-# include "driver/timer.h"
-# include "freertos/task.h"
-# include "freertos/timers.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <cppQueue.h>
+//#include <MD_YM2413.h>
+#include <FreeRTOS_CLI_vESP32.h>
+#include "driver/timer.h"
+#include "freertos/task.h"
+#include "freertos/timers.h"
 #include "freertos/FreeRTOS.h"
+#include <SD.h>
 
-# include "seq_configuration.h"
-# include "seq_system/seq_system.h"
-# include "seq_hardware/seq_hardware.h"
-# include "seq_commands/seq_commands.h"
-
+#include "seq_configuration.h"
+#include "seq_system/seq_system.h"
+#include "seq_hardware/seq_hardware.h"
+#include "seq_commands/seq_commands.h"
 
 /**
    System global variable.
 */
-typedef struct        s_seq_system
+typedef struct s_seq_system
 {
-  t_seq_keyboard      *keyboard;
-  t_seq_synth         *synth;
-  t_seq_sequencer     *sequencer;
-  t_seq_console       *console;
-}                     t_seq_system;
+  t_seq_keyboard *keyboard;
+  t_seq_synth *synth;
+  t_seq_sequencer *sequencer;
+  t_seq_console *console;
+} t_seq_system;
 
 extern t_seq_system seq_system;
-
 
 #endif

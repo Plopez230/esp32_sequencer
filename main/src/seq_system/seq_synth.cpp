@@ -2,32 +2,47 @@
   Copyright (c) 2022, plopez230@gmail.com
   All rights reserved.
 
-  Redistribution and use in source and binary forms, with or without modification, 
+  Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this list 
+  * Redistributions of source code must retain the above copyright notice, this list
     of conditions and the following disclaimer.
-    
-  * Redistributions in binary form must reproduce the above copyright notice, this 
-    list of conditions and the following disclaimer in the documentation and/or other 
+
+  * Redistributions in binary form must reproduce the above copyright notice, this
+    list of conditions and the following disclaimer in the documentation and/or other
     materials provided with the distribution.
 
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
-  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
-  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************************************/
 
 #include "../seq.h"
+
+void seq_patch_init(t_seq_midi_patch *patch)
+{
+  uint8_t channel_idx;
+
+  channel_idx = 0;
+  while (channel_idx < 16)
+  {
+    patch->midi_channels[channel_idx].instrument = channel_idx;
+    patch->midi_channels[channel_idx].volume = 0;
+    patch->midi_channels[channel_idx].sustain = 1;
+    patch->midi_channels[channel_idx].poly_mode = 1;
+    channel_idx++;
+  }
+}
 
 t_seq_synth *seq_synth_create()
 {
@@ -66,13 +81,13 @@ void seq_synth_reset_channels(t_seq_synth *synth)
   }
 }
 
-
-int8_t  seq_synth_get_channel2(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
+int8_t seq_synth_get_channel2(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
 {
   uint8_t channel;
 
   channel = synth->last_active_channel + 1;
-  if (channel > 8) channel = 0;
+  if (channel > 8)
+    channel = 0;
   synth->channels[channel].instrument = instrument;
   synth->channels[channel].note = note;
   synth->channels[channel].velocity = velocity;
@@ -81,7 +96,7 @@ int8_t  seq_synth_get_channel2(t_seq_synth *synth, uint8_t instrument, uint8_t n
   return (channel);
 }
 
-int8_t  seq_synth_get_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
+int8_t seq_synth_get_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
 {
   int8_t channel_counter;
 
@@ -105,12 +120,14 @@ int8_t  seq_synth_get_channel(t_seq_synth *synth, uint8_t instrument, uint8_t no
   return (0);
 }
 
-int8_t  seq_synth_release_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
+int8_t seq_synth_release_channel(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
 {
   int x = 0;
 
-  while (x < 9){
-    if (synth->channels[x].used && synth->channels[x].note == note && synth->channels[x].instrument == instrument) {
+  while (x < 9)
+  {
+    if (synth->channels[x].used && synth->channels[x].note == note && synth->channels[x].instrument == instrument)
+    {
       synth->channels[x].used = false;
       return x;
     }
@@ -119,42 +136,50 @@ int8_t  seq_synth_release_channel(t_seq_synth *synth, uint8_t instrument, uint8_
   return -1;
 }
 
-int note_(int note) {
-  return (int) note % 12;
-}
-
-int octave_ (int note) {
-  return (int) note / 12;
-}
-
-void seq_synth_play_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
+int note_(int note)
 {
-  uint8_t channel = seq_synth_get_channel(synth, instrument, note, velocity);
-  seq_ym2413_play_note(synth->tuning, channel, note, instrument, velocity>>4);
+  return (int)note % 12;
 }
 
-void seq_synth_stop_note(t_seq_synth *synth, uint8_t instrument, uint8_t note, uint8_t velocity)
+int octave_(int note)
 {
-  uint8_t channel = seq_synth_release_channel(synth, instrument, note, velocity);
+  return (int)note / 12;
+}
+
+void seq_synth_play_note(t_seq_synth *synth, uint8_t midi_channel, uint8_t note, uint8_t velocity)
+{
+  uint8_t channel = seq_synth_get_channel(synth, midi_channel, note, velocity);
+
+  seq_ym2413_play_note(synth->tuning, channel, note, synth->patch.midi_channels[midi_channel].instrument, velocity>>4);
+}
+
+void seq_synth_stop_note(t_seq_synth *synth, uint8_t midi_channel, uint8_t note, uint8_t velocity)
+{
+  uint8_t channel = seq_synth_release_channel(synth, midi_channel, note, velocity);
   if (channel == -1)
     return;
-  seq_ym2413_stop_note(channel, false);
+    
+  seq_ym2413_stop_note(synth->tuning, channel, note, synth->patch.midi_channels[midi_channel].instrument, velocity>>4, synth->patch.midi_channels[midi_channel].sustain);
 }
 
 void seq_synth_init(t_seq_synth *synth)
 {
+
   seq_ym2413_setup();
+  //synth->synth_chip = new MD_YM2413(D_PIN, SEQ_YM2413_WE_PIN, SEQ_YM2413_AO_PIN);
+  //synth->synth_chip->begin();
   seq_synth_reset_channels(synth);
   seq_tuning_12(synth->tuning);
+  seq_patch_init(&(synth->patch));
 }
 
 void seq_synth_loop(t_seq_synth *synth)
 {
-  char    event[3];
+  char event[3];
   uint8_t command;
   uint8_t channel;
   uint8_t velocity;
-  
+
   if (!synth->input_buffer)
     return;
   while (!synth->input_buffer->isEmpty())
@@ -163,10 +188,12 @@ void seq_synth_loop(t_seq_synth *synth)
     command = event[0] & 0xf0;
     channel = event[0] & 0x0f;
     velocity = (event[2] * 16) >> 4;
-    if (command == 144) {
+    if (command == 144)
+    {
       seq_synth_play_note(synth, channel, event[1], velocity);
     }
-    if (command == 128) {
+    if (command == 128)
+    {
       seq_synth_stop_note(synth, channel, event[1], velocity);
     }
   }
