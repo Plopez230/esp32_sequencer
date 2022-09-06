@@ -41,6 +41,7 @@ static const CLI_Command_Definition_t seq_fm_command_def =
   -1
 };
 
+void seq_file_gui_control(char *dir_name, char *dst, uint32_t dst_size);
 BaseType_t seq_file_command(char *pcWriteBuffer, size_t xWriteBufferLen, const char *command_string);
 static const CLI_Command_Definition_t seq_file_command_def =
 {

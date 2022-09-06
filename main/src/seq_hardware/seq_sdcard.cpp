@@ -34,12 +34,19 @@
 
 File myFile;
 SPIClass SPISD(HSPI);
-TaskHandle_t  seq_sd_task_handler;
+TaskHandle_t seq_sd_task_handler;
 
 int8_t seq_sd_init()
 {
   SPISD.begin(SEQ_SD_SCK_PIN, SEQ_SD_MISO_PIN, SEQ_SD_MOSI_PIN);
-  if (!SD.begin(SEQ_SD_CS_PIN, SPISD))
+  if (!SD.begin(
+          SEQ_SD_CS_PIN, // SS pin
+          SPISD,         // SPI Class
+          4000000,       // Frequency
+          "/sd",         // Mountpoint
+          10,            // Max files
+          false          // Format if empty
+          ))
   {
     Serial.println(F("SD init failed!"));
     return (-1);
@@ -51,7 +58,6 @@ int8_t seq_sd_init()
   }
 }
 
-
 void SD_Init(void *parameter)
 {
   uint32_t bytes_read = 0;
@@ -59,8 +65,9 @@ void SD_Init(void *parameter)
   t_seq_track *track = sequencer->tracks[0];
   seq_sd_init();
   s_seq_event event;
-  while (1) {
-    myFile = SD.open("/track_2.hex", "r"); //read from file
+  while (1)
+  {
+    myFile = SD.open("/track_2.hex", "r"); // read from file
     if (myFile)
     {
       Serial.println("track_0.seq:");
@@ -70,7 +77,7 @@ void SD_Init(void *parameter)
         {
           Serial.println("No hay track");
           vTaskDelay(1000);
-        } 
+        }
         else if (!track->track_buffer)
         {
           Serial.println("No hay track buffer");
@@ -84,11 +91,12 @@ void SD_Init(void *parameter)
         }
 
         // bool full = !track->track_buffer->isFull();/*)*/
-        if (!track->track_buffer->isFull()){
-        //Serial.println("Dentro:");
-        myFile.read((uint8_t*)&event, 7);
-        bytes_read += 7;
-        track->track_buffer->push(&event);
+        if (!track->track_buffer->isFull())
+        {
+          // Serial.println("Dentro:");
+          myFile.read((uint8_t *)&event, 7);
+          bytes_read += 7;
+          track->track_buffer->push(&event);
         }
 
         if (bytes_read > 2000)
@@ -111,15 +119,14 @@ void SD_Init(void *parameter)
   }
 }
 
-
 void seq_sd_init_task(t_seq_sequencer *sequencer)
 {
   xTaskCreatePinnedToCore(
-    SD_Init, /* Function to implement the task */
-    "sd task", /* Name of the task */
-    10000,  /* Stack size in words */
-    sequencer,  /* Task input parameter */
-    0,  /* Priority of the task */
-    &seq_sd_task_handler,  /* Task handle. */
-    0); /* Core where the task should run */
+      SD_Init,              /* Function to implement the task */
+      "sd task",            /* Name of the task */
+      10000,                /* Stack size in words */
+      sequencer,            /* Task input parameter */
+      0,                    /* Priority of the task */
+      &seq_sd_task_handler, /* Task handle. */
+      0);                   /* Core where the task should run */
 }

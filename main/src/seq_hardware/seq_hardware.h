@@ -127,6 +127,7 @@ void seq_ym2413_shift (uint8_t value);
 void seq_ym2413_setup_pins();
 void seq_ym2413_select_chip();
 void seq_ym2413_reset_chip();
+void seq_ym2413_load_instrument(const uint8_t *data);
 void seq_ym2413_update_preset(t_seq_fm_preset *preset);
 void seq_ym2413_setup();
 void seq_ym2413_write(byte address, byte data);

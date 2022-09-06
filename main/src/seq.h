@@ -42,7 +42,6 @@
 #include "freertos/timers.h"
 #include "freertos/FreeRTOS.h"
 #include <SD.h>
-
 #include "seq_configuration.h"
 #include "seq_system/seq_system.h"
 #include "seq_hardware/seq_hardware.h"

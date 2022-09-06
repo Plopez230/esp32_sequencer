@@ -72,10 +72,10 @@ void seq_fm_gui_cursor()
       u8g2.drawBox(slider_x - 7, 10 + 7 * seq_fm_selection_y + 3, 31, 7);
     if (seq_fm_selection_x == 1)
       u8g2.drawBox(checkbox_x - 7, 10 + 7 * seq_fm_selection_y + 3, 31, 7);
-     if (seq_fm_selection_x == 2)
-     u8g2.drawBox(checkbox_x - 7 + 32, 10 + 7 * seq_fm_selection_y + 3, 30, 7);
-     if (seq_fm_selection_x == 3)
-     u8g2.drawBox(checkbox_x - 7 + 63, 10 + 7 * seq_fm_selection_y + 3, 29, 7);
+    if (seq_fm_selection_x == 2)
+      u8g2.drawBox(checkbox_x - 7 + 32, 10 + 7 * seq_fm_selection_y + 3, 30, 7);
+    if (seq_fm_selection_x == 3)
+      u8g2.drawBox(checkbox_x - 7 + 63, 10 + 7 * seq_fm_selection_y + 3, 29, 7);
   }
   u8g2.setDrawColor(1);
 }
@@ -99,7 +99,6 @@ void seq_fm_gui_doc()
   u8g2.setColorIndex(0);
   u8g2.drawBox(x + slider_x - 6, h + 1, 59, 43);
   u8g2.setColorIndex(1);
-
 
   SEQ_DRAW_SLIDER(slider_x, h, "KSL", (seq_system.synth->patch.original_instrument.carrier_ksl << 2));
   SEQ_DRAW_SLIDER(slider_x + x, h, "KSL", (seq_system.synth->patch.original_instrument.modulator_ksl << 2));
@@ -137,8 +136,8 @@ void seq_fm_gui_doc()
   h += 10;
   SEQ_DRAW_SLIDER(slider_x - 6, h, "FB", (seq_system.synth->patch.original_instrument.feedback << 1));
   SEQ_DRAW_SLIDER(slider_x + x - 36, h, "LVL", (seq_system.synth->patch.original_instrument.level >> 2));
-  u8g2.drawStr(slider_x +64, h + 7, "Save");
-  u8g2.drawStr(slider_x +94, h + 7, "Load");
+  u8g2.drawStr(slider_x + 64, h + 7, "Save");
+  u8g2.drawStr(slider_x + 94, h + 7, "Load");
 }
 
 void seq_fm_gui_draw()
@@ -274,6 +273,7 @@ void seq_fm_gui_control()
   seq_keyboard_set_application_mode(seq_system.keyboard);
   console = seq_system.console;
   tuning = seq_system.synth->tuning;
+  seq_system.keyboard->midi_channel = 0;
   preset = &(seq_system.synth->patch.original_instrument);
   while (1)
   {
@@ -312,6 +312,18 @@ void seq_fm_gui_control()
       {
         seq_keyboard_set_control_mode(seq_system.keyboard);
         return;
+      }
+      else if (input == '\n')
+      {
+        if (seq_fm_selection_x == 3 && seq_fm_selection_y == 6)
+        {
+          char file_buffer[2048];
+          uint8_t instruement_buffer[8];
+          seq_file_gui_control("/instruments", file_buffer, 2048);
+          File file = SD.open(file_buffer, "r");
+          file.read(instruement_buffer, 8);
+          seq_ym2413_load_instrument(instruement_buffer);
+        }
       }
     }
     seq_st7920_draw(seq_fm_gui_draw);
