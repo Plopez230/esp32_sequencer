@@ -14,5 +14,5 @@ $${\huge\color{red}E\color{orange}v\color{green}e\color{blue}r\color{purple}y\co
 - LCD screen, SD card reader.
 
 ![Instrument](https://github.com/Plopez230/esp32_sequencer/assets/4245390/60189cc3-7199-46ca-8484-0ef6a5fd2f9a)
-
+Due to the risk of fire, it is not recommended to leave the device unattended.
 Blueprints and schematics coming soon.
